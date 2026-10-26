@@ -265,14 +265,15 @@ Three separate concepts, all in integer paise: **RentCharge** (owed), **Payment*
 ## Expenses and reports
 
 - Expenses (`/api/expenses`, owner only for now): `paidAt` is the cash date and `periodKey` is derived from it (IST month). `DELETE` voids (`isVoided`) rather than deleting; voided rows are excluded from lists (unless `includeVoided=true`) and every report. Create/update/void are audited.
-- Reports (`/api/reports/{overview,occupancy,collections,outstanding,expenses,trend,export}`, owner only, `propertyId` required) are MongoDB aggregation pipelines over the payment ledger, charges, stays, beds and expenses; nothing is cached or hard-coded. All money is integer paise; percentages are rounded to 2 decimals. Each overview carries `definitions` (the text behind the dashboard's source tooltips).
+- Reports (`/api/reports/{overview,occupancy,collections,outstanding,expenses,trend,export}`, owner, or wardens holding `finances.view`/`reports.view`; `propertyId` required) are MongoDB aggregation pipelines over the payment ledger, charges, stays, beds and expenses; nothing is cached or hard-coded. All money is integer paise; percentages are rounded to 2 decimals. Each overview carries `definitions` (the text behind the dashboard's source tooltips).
 - Accounting rules: **charged** = net due on charges with that `periodKey`; **collected** = payment allocations to those charges net of reversals, attributed to the charge's month, not the payment date; **outstanding** = net due - collected per charge (waived owe nothing). **Deposits are liabilities** and never enter charged, collected or cash: `deposits.heldPaise` = deposits on active stays + refunds approved/pending payout, with deposits received and refunds paid this month as informational lines. **Expenses** are cash-based (month of `paidAt`, `paymentStatus: paid`, not voided). `netCashPaise` = collected - expenses; it is a cash position, not profit, and mixes a charge-month figure with a cash-month figure by design.
 - Occupancy series is rebuilt from stay check-in/check-out dates; bed totals are today's (beds keep no history), so older days approximate the denominator. Collections take the months overlapping `from`/`to`. Outstanding aging buckets are days past due date (not-yet-due counts as 0-15).
+- Raw CSV exports also need the matching read permission (`payments.view` for charges/payments, `residents.view` for residents, `finances.view` for expenses), so `reports.view` alone cannot pull resident or payment rows.
 - CSV export streams from a cursor with `Content-Disposition: attachment`; amounts are in paise (`*Paise` columns) and cells that could be read as spreadsheet formulas are prefixed with `'`.
 
 ## Tests
 
-`npm test` runs 229 tests (Vitest + Supertest on mongodb-memory-server; `npm run test:replset` repeats them on a replica set). Coverage: `npm run test:coverage --prefix server`.
+`npm test` runs 237 tests (Vitest + Supertest on mongodb-memory-server; `npm run test:replset` repeats them on a replica set). Coverage: `npm run test:coverage --prefix server`.
 
 | Area | File |
 | --- | --- |
@@ -281,6 +282,7 @@ Three separate concepts, all in integer paise: **RentCharge** (owed), **Payment*
 | Check-out, refunds, double check-out | `checkout` |
 | Complaints and the state machine | `complaints` |
 | Expenses, reports, CSV export, performance | `reports` |
+| Export permissions, finance access, live access changes | `gaps` |
 | Staff invitations and permission enforcement | `staff` |
 | Notifications, dedupe, jobs | `notifications` |
 | Student portal | `student` |
@@ -311,7 +313,6 @@ Concurrency is covered where it lives: bed double assignment (`stays`), duplicat
 - **Advances are recorded but not applied** to later charges; deposits are tracked on the stay and refund, not as a ledger of receipts.
 - **No file uploads.** Photos and receipts are URLs on allow-listed hosts.
 - **Occupancy history is derived** from stay dates against today's bed totals; there are no daily snapshots.
-- **Warden UI for finances.** The API honours `finances.view`/`reports.view` for wardens, but the reports and expenses screens are only wired up in the owner navigation.
 - **Planned:** payment gateway and settlement, WhatsApp/SMS, multi-property consolidation, native mobile apps, PDF receipts, SLA escalation emails.
 
 ### Packages added in the final phase
