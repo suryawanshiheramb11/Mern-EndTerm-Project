@@ -1,0 +1,15 @@
+node_modules/
+dist/
+build/
+coverage/
+*.log
+.DS_Store
+.vite/
+.vercel/
+
+# Environment variables
+.env
+.env.*
+.env*
+!.env.example
+
