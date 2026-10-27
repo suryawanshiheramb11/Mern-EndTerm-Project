@@ -4,7 +4,7 @@ import { authenticate } from '../middleware/authenticate.js';
 import { authorize } from '../middleware/authorize.js';
 import { validate } from '../middleware/validate.js';
 import { createComplaintSchema } from '../validators/complaint.schema.js';
-import { notificationParams, razorpayOrderSchema, razorpayVerifySchema, notificationsQuery, pageQuery, paymentIdParams } from '../validators/me.schema.js';
+import { notificationParams, razorpayOrderSchema, razorpayVerifySchema, selfDetailsSchema, notificationsQuery, pageQuery, paymentIdParams } from '../validators/me.schema.js';
 
 /*
  * Student self-service. Everything is scoped to the caller's own resident profile in the service
@@ -21,6 +21,7 @@ router.post('/notifications/:id/read', validate({ params: notificationParams }),
 
 router.get('/summary', student, ctrl.summary);
 router.get('/profile', student, ctrl.profile);
+router.patch('/details', student, validate({ body: selfDetailsSchema }), ctrl.updateDetails);
 router.get('/stay', student, ctrl.stay);
 router.get('/charges', student, validate({ query: pageQuery }), ctrl.listCharges);
 router.get('/payments', student, validate({ query: pageQuery }), ctrl.listPayments);

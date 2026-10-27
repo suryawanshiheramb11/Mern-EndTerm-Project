@@ -11,3 +11,6 @@ export const inviteResident = async (id) => data(await api.post(`/residents/${id
 export const listStays = async (filters = {}) => data(await api.get('/stays', { params: { limit: 200, ...clean(filters) } }));
 export const createStay = async (body) => data(await api.post('/stays', body));
 export const transferStay = async (id, body) => data(await api.post(`/stays/${id}/transfer`, body));
+export const updateResident = async (id, body) => data(await api.patch(`/residents/${id}`, body)).resident;
+export const setResidentCredentials = async (id, body = {}) => data(await api.post(`/residents/${id}/credentials`, body));
+export const changeResidentEmail = async (id, email) => data(await api.patch(`/residents/${id}/account-email`, { email }));

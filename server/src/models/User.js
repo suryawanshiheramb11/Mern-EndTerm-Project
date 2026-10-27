@@ -29,8 +29,9 @@ const userSchema = new mongoose.Schema(
     lastLoginAt: { type: Date },
     // Set when an owner hands out a temporary password: every other API call is refused until it is changed.
     mustChangePassword: { type: Boolean, default: false },
-    // Tokens issued before this moment are rejected (password or email changed).
     passwordChangedAt: { type: Date },
+    // Embedded in every access token; bumped on password/email change so older tokens die at once.
+    tokenVersion: { type: Number, default: 0 },
     // Brute-force defence on top of the per-IP limiter: lock the account after repeated failures.
     failedLoginCount: { type: Number, default: 0, select: false },
     lockedUntil: { type: Date, select: false },

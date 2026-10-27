@@ -15,3 +15,13 @@ export const update = asyncHandler(async (req, res) => {
 export const revoke = asyncHandler(async (req, res) => {
   ApiResponse.send(res, await staff.revokeStaff(req.user, req.params.propertyId, req.params.userId), 'Access revoked');
 });
+
+// The temporary password is returned in the response body exactly once; no response header or log carries it.
+export const create = asyncHandler(async (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  ApiResponse.created(res, await staff.createStaffWithPassword(req.user, req.params.propertyId, req.body), 'Login created');
+});
+export const resetPassword = asyncHandler(async (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  ApiResponse.send(res, await staff.resetStaffPassword(req.user, req.params.propertyId, req.params.userId, req.body), 'Password reset');
+});

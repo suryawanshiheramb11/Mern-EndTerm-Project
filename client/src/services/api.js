@@ -6,7 +6,7 @@ export const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-const SESSION_ENDPOINTS = /\/auth\/(login|register|refresh|logout)$/;
+const SESSION_ENDPOINTS = /\/auth\/(login|register|refresh|logout|google|change-password|otp\/(request|verify))$/;
 
 const readCookie = (name) =>
   document.cookie
@@ -35,6 +35,7 @@ const normalize = (error) => {
   const normalized = new Error(data?.message || error.message || 'Something went wrong');
   normalized.status = error.response?.status;
   normalized.errors = data?.errors ?? [];
+  normalized.code = data?.code;
   return normalized;
 };
 

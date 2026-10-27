@@ -1,73 +1,72 @@
 import { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
-import AuthForm, { Field } from '../../components/AuthForm.jsx';
+import { useQuery } from '@tanstack/react-query';
+import AuthLayout, { Alert, Divider, PrimaryButton, TextField } from '../../components/auth/AuthLayout.jsx';
+import GoogleButton from '../../components/auth/GoogleButton.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
-import { ROLE_HOME } from '../../lib/roles.js';
+import { homeFor } from '../../lib/roles.js';
+import * as authApi from '../../services/auth.js';
 
 export default function Register() {
-  const { user, loading, register } = useAuth();
+  const { user, loading, register, setUser } = useAuth();
   const navigate = useNavigate();
+  const config = useQuery({ queryKey: ['auth', 'config'], queryFn: authApi.getAuthConfig, staleTime: Infinity, retry: 1 });
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
-  const [submitting, setSubmitting] = useState(false);
+  const [busy, setBusy] = useState(false);
 
-  if (!loading && user) return <Navigate to={ROLE_HOME[user.role]} replace />;
+  if (!loading && user) return <Navigate to={homeFor(user)} replace />;
+
+  const done = (next) => {
+    setUser(next);
+    navigate(homeFor(next), { replace: true });
+  };
+  const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
   const onSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setFieldErrors({});
-    setSubmitting(true);
+    setBusy(true);
     try {
-      const next = await register({ ...form, role: 'owner' });
-      navigate(ROLE_HOME[next.role], { replace: true });
+      done(await register({ ...form, role: 'owner' }));
     } catch (err) {
       setError(err.message);
-      setFieldErrors(Object.fromEntries(err.errors.map((i) => [i.field.replace(/^body\./, ''), i.message])));
+      setFieldErrors(Object.fromEntries((err.errors ?? []).map((i) => [i.field.replace(/^body\./, ''), i.message])));
     } finally {
-      setSubmitting(false);
+      setBusy(false);
     }
   };
 
-  const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
+  const withGoogle = async (credential) => {
+    setError('');
+    setBusy(true);
+    try {
+      done(await authApi.googleSignIn(credential, 'register'));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
-    <AuthForm
+    <AuthLayout
       title="Create your owner account"
-      error={error}
-      submitting={submitting}
-      submitLabel="Register"
-      onSubmit={onSubmit}
-      footer={
-        <>
-          Already registered?{' '}
-          <Link to="/login" className="font-medium text-accent-ink hover:underline">
-            Log in
-          </Link>
-        </>
-      }
+      subtitle="Add your property and start in minutes. Free for 14 days."
+      footer={<>Already registered? <Link to="/login" className="font-semibold text-accent-ink hover:underline">Log in</Link></>}
     >
-      <Field label="Name" autoComplete="name" required value={form.name} onChange={set('name')} error={fieldErrors.name} />
-      <Field
-        label="Email"
-        type="email"
-        autoComplete="email"
-        required
-        value={form.email}
-        onChange={set('email')}
-        error={fieldErrors.email}
-      />
-      <Field
-        label="Password"
-        type="password"
-        autoComplete="new-password"
-        required
-        minLength={8}
-        value={form.password}
-        onChange={set('password')}
-        error={fieldErrors.password}
-      />
-    </AuthForm>
+      <GoogleButton intent="register" clientId={config.data?.googleClientId} onCredential={withGoogle} onError={(e) => setError(e.message)} />
+      <Divider>or sign up with email</Divider>
+      <Alert>{error}</Alert>
+      <form className="space-y-4" onSubmit={onSubmit}>
+        <TextField label="Full name" autoComplete="name" required value={form.name} onChange={set('name')} error={fieldErrors.name} />
+        <TextField label="Email" type="email" autoComplete="email" required value={form.email} onChange={set('email')} error={fieldErrors.email} />
+        <TextField label="Password" type="password" autoComplete="new-password" required minLength={8} value={form.password} onChange={set('password')} error={fieldErrors.password} hint="At least 8 characters, with a letter and a number." />
+        <PrimaryButton busy={busy}>Create account</PrimaryButton>
+      </form>
+      <p className="mt-4 text-center text-xs text-slate-500">Wardens, maintenance staff and students do not register here. Your owner gives them a login.</p>
+    </AuthLayout>
   );
 }

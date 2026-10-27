@@ -76,16 +76,25 @@ export const createOrder = async (user, { chargeId, amountPaise: requested }) =>
   return { orderId: order.id, keyId: env.RAZORPAY_KEY_ID, amountPaise, currency: 'INR', description: `Rent ${charge.periodKey}` };
 };
 
-export const verifyAndRecord = async (user, { razorpay_order_id: orderId, razorpay_payment_id: paymentId, razorpay_signature: signature }) => {
-  credentials();
-  if (!isValidSignature({ orderId, paymentId, signature })) throw ApiError.badRequest('Payment signature could not be verified');
+/**
+ * Shared by the browser callback and the webhook. Razorpay is the source of truth: the amount, the
+ * charge (from the order notes) and the "captured" state all come from Razorpay, never from the caller.
+ * `user` is the signed-in student for the browser path (ownership is enforced); the webhook passes
+ * none because its signature already proves the call came from Razorpay.
+ */
+const recordOrderPayment = async ({ orderId, paymentId, user }) => {
+  const [order, rzpPayment] = await Promise.all([razorpayFetch(`/orders/${encodeURIComponent(orderId)}`), razorpayFetch(`/payments/${encodeURIComponent(paymentId)}`)]);
+  if (rzpPayment.order_id !== orderId) throw ApiError.badRequest('This payment does not belong to that order');
+  if (rzpPayment.status !== 'captured') throw ApiError.conflict('The payment has not completed yet');
+  if (rzpPayment.amount !== order.amount) throw ApiError.badRequest('Payment amount does not match the order');
 
-  const order = await razorpayFetch(`/orders/${encodeURIComponent(orderId)}`);
   const { chargeId, residentId, propertyId } = order.notes ?? {};
-  // Ownership: the order must be for a charge of the caller's own resident profile.
-  const charge = await loadInScope(RentCharge, chargeId, user, { label: 'Charge' });
-  if (String(charge.resident) !== residentId || String(charge.property) !== propertyId) throw ApiError.notFound('Charge not found');
+  const charge = user
+    ? await loadInScope(RentCharge, chargeId, user, { label: 'Charge' }) // ownership: a student's own charge only
+    : await RentCharge.findById(chargeId);
+  if (!charge || String(charge.resident) !== residentId || String(charge.property) !== propertyId) throw ApiError.notFound('Charge not found');
 
+  const owed = outstandingOf(charge, charge.paidPaise);
   return recordPayment({
     propertyId: charge.property,
     residentId: charge.resident,
@@ -93,10 +102,37 @@ export const verifyAndRecord = async (user, { razorpay_order_id: orderId, razorp
     method: 'razorpay',
     reference: paymentId,
     // Cap at what is still owed; any overpayment (another payment cleared it meanwhile) becomes an advance.
-    allocations: [{ chargeId: charge._id, amountPaise: Math.min(order.amount, outstandingOf(charge, charge.paidPaise)) }].filter((a) => a.amountPaise > 0),
+    allocations: [{ chargeId: charge._id, amountPaise: Math.min(order.amount, owed) }].filter((a) => a.amountPaise > 0),
     allowAdvance: true,
     idempotencyKey: `rzp_${paymentId}`,
     notes: `Razorpay order ${orderId}`,
-    receivedBy: user._id,
+    receivedBy: user?._id,
   });
+};
+
+export const verifyAndRecord = async (user, { razorpay_order_id: orderId, razorpay_payment_id: paymentId, razorpay_signature: signature }) => {
+  credentials();
+  if (!isValidSignature({ orderId, paymentId, signature })) throw ApiError.badRequest('Payment signature could not be verified');
+  return recordOrderPayment({ orderId, paymentId, user });
+};
+
+/** Razorpay -> StayOS. Records captured payments even if the student closed the browser mid-payment. */
+export const handleWebhook = async (rawBody, signature) => {
+  if (!env.RAZORPAY_WEBHOOK_SECRET) throw new ApiError(503, 'Webhook is not configured');
+  const expected = crypto.createHmac('sha256', env.RAZORPAY_WEBHOOK_SECRET).update(rawBody ?? '').digest('hex');
+  const a = Buffer.from(expected);
+  const b = Buffer.from(String(signature ?? ''));
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) throw ApiError.unauthorized('Invalid webhook signature');
+
+  const event = JSON.parse(rawBody.toString('utf8'));
+  if (event.event !== 'payment.captured') return { handled: false };
+  const entity = event.payload?.payment?.entity;
+  if (!entity?.id || !entity?.order_id) return { handled: false };
+  try {
+    const { replayed } = await recordOrderPayment({ orderId: entity.order_id, paymentId: entity.id });
+    return { handled: true, replayed };
+  } catch (err) {
+    if (err instanceof ApiError && err.statusCode < 500) return { handled: false, reason: err.message }; // permanent: do not make Razorpay retry
+    throw err;
+  }
 };

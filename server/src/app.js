@@ -44,7 +44,8 @@ app.use(
 app.use(originGuard);
 app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
 app.use(requestContext);
-app.use(express.json({ limit: '1mb' }));
+// The webhook signature is computed over the exact bytes Razorpay sent, so keep them for that route.
+app.use(express.json({ limit: '1mb', verify: (req, _res, buf) => { if (req.originalUrl.startsWith('/api/webhooks/')) req.rawBody = buf; } }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 app.use(cookieParser(env.COOKIE_SECRET));
 app.use(sanitizeInput);

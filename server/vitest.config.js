@@ -17,6 +17,8 @@ export default defineConfig({
       COOKIE_SECRET: 'test-cookie-secret',
       RAZORPAY_KEY_ID: 'rzp_test_unit',
       RAZORPAY_KEY_SECRET: 'unit-test-secret',
+      RAZORPAY_WEBHOOK_SECRET: 'unit-webhook-secret',
+      GOOGLE_CLIENT_ID: 'test-google-client.apps.googleusercontent.com',
       ATTACHMENT_ALLOWED_HOSTS: 'files.example.com,*.cdn.example.com',
     },
   },

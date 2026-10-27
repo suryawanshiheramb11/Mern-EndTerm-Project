@@ -10,6 +10,8 @@ const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 // Double-submit cookie: the client echoes the readable cookie back in a header.
 export const csrfProtection = (req, res, next) => {
   if (!env.CSRF_ENABLED) return next();
+  // Server-to-server webhooks carry no cookies; they authenticate with an HMAC signature instead.
+  if (req.path.startsWith('/webhooks/')) return next();
 
   let cookieToken = req.cookies?.[CSRF_COOKIE];
   if (!cookieToken) {

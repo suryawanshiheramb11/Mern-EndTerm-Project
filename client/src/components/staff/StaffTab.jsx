@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import ErrorBanner from '../ErrorBanner.jsx';
-import { AnnouncementModal, EditStaffModal, InviteStaffModal } from './StaffModals.jsx';
+import { AnnouncementModal, CreateStaffLoginModal, EditStaffModal, InviteStaffModal, ResetStaffPasswordModal } from './StaffModals.jsx';
 import { PERMISSION_OPTIONS } from '../../lib/permissions.js';
 import { listStaff, revokeStaff } from '../../services/staff.js';
 
@@ -30,7 +30,8 @@ export default function StaffTab({ propertyId }) {
     <div className="space-y-3">
       <div className="flex flex-wrap justify-end gap-2">
         <button type="button" onClick={() => setModal({ type: 'announce' })} className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium hover:bg-slate-50">Send announcement</button>
-        <button type="button" onClick={() => setModal({ type: 'invite' })} className="rounded-md bg-accent px-3 py-2 text-sm font-medium text-onaccent hover:bg-accent-hover">Invite staff</button>
+        <button type="button" onClick={() => setModal({ type: 'invite' })} className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium hover:bg-slate-50">Invite by email</button>
+        <button type="button" onClick={() => setModal({ type: 'create' })} className="rounded-md bg-accent px-3 py-2 text-sm font-medium text-onaccent hover:bg-accent-hover">Create login</button>
       </div>
       <ErrorBanner error={staff.error ?? error} />
       {staff.isLoading ? <p className="text-slate-500">Loading…</p> : rows.length === 0 ? (
@@ -48,6 +49,7 @@ export default function StaffTab({ propertyId }) {
                   <td className="px-4 py-2"><span className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS[m.status]}`}>{m.status}</span></td>
                   <td className="space-x-1 whitespace-nowrap px-4 py-2 text-right">
                     <button type="button" className="rounded border border-slate-300 px-2 py-1 text-xs font-medium hover:bg-slate-50" onClick={() => setModal({ type: 'edit', member: m })}>Edit access</button>
+                    <button type="button" className="rounded border border-slate-300 px-2 py-1 text-xs font-medium hover:bg-slate-50" onClick={() => setModal({ type: 'reset', member: m })}>Reset password</button>
                     <button type="button" className="rounded border border-slate-300 px-2 py-1 text-xs font-medium hover:bg-slate-50" onClick={() => revoke(m)}>Revoke</button>
                   </td>
                 </tr>
@@ -56,6 +58,8 @@ export default function StaffTab({ propertyId }) {
           </table>
         </div>
       )}
+      {modal?.type === 'create' && <CreateStaffLoginModal propertyId={propertyId} onClose={() => setModal(null)} />}
+      {modal?.type === 'reset' && <ResetStaffPasswordModal propertyId={propertyId} member={modal.member} onClose={() => setModal(null)} />}
       {modal?.type === 'invite' && <InviteStaffModal propertyId={propertyId} onClose={() => setModal(null)} />}
       {modal?.type === 'edit' && <EditStaffModal propertyId={propertyId} member={modal.member} onClose={() => setModal(null)} />}
       {modal?.type === 'announce' && <AnnouncementModal propertyId={propertyId} onClose={() => setModal(null)} />}

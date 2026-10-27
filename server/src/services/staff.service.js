@@ -3,9 +3,9 @@ import { DEFAULT_PERMISSIONS } from '../config/permissions.js';
 import { env } from '../config/env.js';
 import { ApiError } from '../utils/ApiError.js';
 import { logger } from '../utils/logger.js';
-import { generateToken, hashToken } from '../utils/tokens.js';
+import { generateTempPassword, generateToken, hashToken } from '../utils/tokens.js';
 import { writeAudit } from './audit.service.js';
-import { deliverToken } from './auth.service.js';
+import { deliverToken, setTemporaryPassword } from './auth.service.js';
 import { sendEmail } from './emailTransport.js';
 import { assertPropertyAccess } from './propertyAccess.service.js';
 
@@ -90,4 +90,36 @@ export const revokeStaff = async (owner, propertyId, userId) => {
   await User.updateOne({ _id: user._id }, { $pull: { propertyAccess: { property: propertyId } } });
   await writeAudit({ user: owner, action: 'staff.revoke', entityType: 'User', entityId: user._id, property: propertyId, before: { role: before.role, permissions: before.permissions }, after: { access: 'revoked' } });
   return { revoked: true, userId: String(user._id) };
+};
+
+/**
+ * Owner creates a staff login directly and hands over the credentials. The password is generated
+ * unless the owner supplies one, shown once, and must be changed at first sign-in.
+ */
+export const createStaffWithPassword = async (owner, propertyId, { email, name, role, permissions, password }) => {
+  await assertPropertyAccess(owner, propertyId);
+  if (await User.exists({ email })) throw ApiError.conflict('A user with this email already exists');
+
+  const granted = permissions ?? [...DEFAULT_PERMISSIONS[role]];
+  const temporary = password ?? generateTempPassword();
+  const user = new User({ name, email, role, propertyAccess: [{ property: propertyId, role, permissions: granted }] });
+  user.password = temporary;
+  try {
+    await user.save();
+  } catch (err) {
+    if (err?.code === 11000) throw ApiError.conflict('A user with this email already exists');
+    throw err;
+  }
+  await setTemporaryPassword(user, temporary);
+  await writeAudit({ user: owner, action: 'staff.credentials.create', entityType: 'User', entityId: user._id, property: propertyId, after: { email, role, permissions: granted, mustChangePassword: true } });
+  return { user: present(user, propertyId), temporaryPassword: temporary };
+};
+
+export const resetStaffPassword = async (owner, propertyId, userId, { password } = {}) => {
+  await assertPropertyAccess(owner, propertyId);
+  const user = await staffUser(propertyId, userId);
+  const temporary = password ?? generateTempPassword();
+  await setTemporaryPassword(user, temporary);
+  await writeAudit({ user: owner, action: 'staff.password.reset', entityType: 'User', entityId: user._id, property: propertyId, after: { mustChangePassword: true } });
+  return { user: present(user, propertyId), temporaryPassword: temporary };
 };

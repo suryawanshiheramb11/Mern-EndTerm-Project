@@ -11,6 +11,7 @@ import expenseRoutes from './expense.routes.js';
 import reportRoutes from './report.routes.js';
 import adminRoutes from './admin.routes.js';
 import meRoutes from './me.routes.js';
+import webhookRoutes from './webhook.routes.js';
 
 const router = Router();
 
@@ -26,5 +27,6 @@ router.use('/expenses', expenseRoutes);
 router.use('/reports', reportRoutes);
 router.use('/admin', adminRoutes);
 router.use('/me', meRoutes);
+router.use('/webhooks', webhookRoutes);
 
 export default router;

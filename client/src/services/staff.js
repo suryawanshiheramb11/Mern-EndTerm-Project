@@ -7,3 +7,5 @@ export const inviteStaff = async (propertyId, body) => data(await api.post(`/pro
 export const updateStaff = async (propertyId, userId, body) => data(await api.patch(`/properties/${propertyId}/staff/${userId}`, body)).user;
 export const revokeStaff = async (propertyId, userId) => data(await api.delete(`/properties/${propertyId}/staff/${userId}`));
 export const sendAnnouncement = async (propertyId, body) => data(await api.post(`/properties/${propertyId}/announcements`, body));
+export const createStaffLogin = async (propertyId, body) => data(await api.post(`/properties/${propertyId}/staff/create`, body));
+export const resetStaffPassword = async (propertyId, userId, body = {}) => data(await api.post(`/properties/${propertyId}/staff/${userId}/reset-password`, body));

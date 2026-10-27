@@ -37,6 +37,15 @@ export const paymentLimiter = limiter({
   keyGenerator: (req) => String(req.user?._id ?? req.ip),
 });
 
+// One-time codes: few requests and few guesses per address, on top of the per-account attempt cap.
+export const otpLimiter = limiter({
+  limit: unlessTest(10),
+  message: 'Too many code requests, please try again later.',
+  keyGenerator: (req) => `${req.ip}:${String(req.body?.email ?? '').trim().toLowerCase()}`,
+});
+
+export const googleLimiter = limiter({ limit: unlessTest(20), message: 'Too many sign-in attempts, please try again later.' });
+
 export const forgotPasswordLimiter = limiter({
   limit: unlessTest(5),
   message: 'Too many requests, please try again later.',

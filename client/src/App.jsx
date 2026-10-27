@@ -3,6 +3,8 @@ import Home from './pages/Home.jsx';
 import Pricing from './pages/Pricing.jsx';
 import Login from './pages/auth/Login.jsx';
 import Register from './pages/auth/Register.jsx';
+import ChangePassword from './pages/auth/ChangePassword.jsx';
+import UrlMask from './components/UrlMask.jsx';
 import Forbidden from './pages/Forbidden.jsx';
 import StudentShell from './layouts/StudentShell.jsx';
 import StudentDashboard from './pages/student/StudentDashboard.jsx';
@@ -35,6 +37,8 @@ const guard = (any, page) => <RequirePermission any={any}>{page}</RequirePermiss
 
 export default function App() {
   return (
+    <>
+    <UrlMask />
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/pricing" element={<Pricing />} />
@@ -42,6 +46,9 @@ export default function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/forbidden" element={<Forbidden />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/change-password" element={<ChangePassword />} />
+      </Route>
 
       {INVENTORY_ROLES.map((role) => (
         <Route key={role} element={<ProtectedRoute roles={[role]} />}>
@@ -73,5 +80,6 @@ export default function App() {
 
       <Route path="*" element={<ComingSoon title="Not found" />} />
     </Routes>
+    </>
   );
 }

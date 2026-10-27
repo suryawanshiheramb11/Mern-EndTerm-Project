@@ -50,6 +50,9 @@ const collectRoutes = (stack, prefix = '', authed = false) => {
 const PUBLIC = new Set([
   'GET /api/health', 'POST /api/auth/register', 'POST /api/auth/login', 'POST /api/auth/logout', 'POST /api/auth/refresh',
   'POST /api/auth/forgot-password', 'POST /api/auth/reset-password', 'POST /api/auth/verify-email',
+  // Sign-in methods added later: each verifies a credential of its own (Google token, emailed code).
+  'GET /api/auth/config', 'POST /api/auth/google', 'POST /api/auth/otp/request', 'POST /api/auth/otp/verify',
+  'POST /api/webhooks/razorpay',
 ]);
 
 describe('route inventory', () => {

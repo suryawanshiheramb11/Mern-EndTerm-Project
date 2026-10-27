@@ -4,7 +4,7 @@
 // Secrets (passwords, one-time tokens) keep their exact characters so they are never altered.
 // eslint-disable-next-line no-control-regex -- matching control characters is the point
 const CONTROL = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
-const VERBATIM_KEYS = new Set(['password', 'token', 'newPassword']);
+const VERBATIM_KEYS = new Set(['password', 'token', 'newPassword', 'currentPassword', 'credential', 'code']);
 
 const clean = (value, key) => {
   if (typeof value === 'string') return VERBATIM_KEYS.has(key) ? value : value.replace(CONTROL, '');

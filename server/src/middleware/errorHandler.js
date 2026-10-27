@@ -55,6 +55,7 @@ export const errorHandler = (err, req, res, _next) => {
 
   const body = { success: false, message };
   if (errors?.length) body.errors = errors;
+  if (err instanceof ApiError && typeof err.code === 'string') body.code = err.code;
   if (!env.isProd && unknown) body.stack = err?.stack;
 
   res.status(statusCode).json(body);

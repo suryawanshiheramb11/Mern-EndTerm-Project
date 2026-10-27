@@ -50,11 +50,14 @@ export function AuthProvider({ children }) {
     }
   }, [queryClient]);
 
+  // For sign-in methods that finish elsewhere (Google, emailed code, password change).
+  const setUser = useCallback((next) => queryClient.setQueryData(ME_KEY, next), [queryClient]);
+
   const refresh = useCallback(async () => (await refetch()).data ?? null, [refetch]);
 
   const value = useMemo(
-    () => ({ user, loading: isLoading, login, register, logout, refresh }),
-    [user, isLoading, login, register, logout, refresh],
+    () => ({ user, loading: isLoading, login, register, logout, refresh, setUser }),
+    [user, isLoading, login, register, logout, refresh, setUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

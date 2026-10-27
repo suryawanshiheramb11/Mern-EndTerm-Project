@@ -29,3 +29,8 @@ export const forgotPasswordSchema = z.object({ email }).strict();
 export const resetPasswordSchema = z.object({ token, password }).strict();
 
 export const verifyEmailSchema = z.object({ token }).strict();
+
+export const changePasswordSchema = z.object({ currentPassword: z.string().max(128).optional(), newPassword: password }).strict();
+export const googleSchema = z.object({ credential: z.string().min(20).max(4096), intent: z.enum(['login', 'register']).default('login') }).strict();
+export const otpRequestSchema = z.object({ email }).strict();
+export const otpVerifySchema = z.object({ email, code: z.string().regex(/^\d{6}$/, 'Enter the 6-digit code') }).strict();

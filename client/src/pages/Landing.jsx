@@ -261,10 +261,7 @@ export default function Landing() {
         <section className="relative overflow-hidden">
           <div className="pointer-events-none absolute inset-x-0 top-0 h-[560px]" style={{ background: 'radial-gradient(55% 60% at 50% 0%, rgb(var(--accent) / 0.14), transparent 70%)' }} aria-hidden="true" />
           <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-14 text-center sm:px-6 sm:pt-20">
-            <p className="mx-auto inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-600">
-              <span className="h-2 w-2 rounded-full bg-accent" /> Software for PGs, hostels and co-living
-            </p>
-            <h1 className="mx-auto mt-6 max-w-4xl text-[2.6rem] font-semibold leading-[1.05] tracking-tight text-slate-900 sm:text-6xl lg:text-7xl">
+            <h1 className="mx-auto max-w-4xl text-[2.6rem] font-semibold leading-[1.05] tracking-tight text-slate-900 sm:text-6xl lg:text-7xl">
               Run your PG.<br />Not the paperwork.
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-600 sm:text-xl">

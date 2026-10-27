@@ -5,7 +5,7 @@ import { authenticate } from '../middleware/authenticate.js';
 import { authorize } from '../middleware/authorize.js';
 import { validate } from '../middleware/validate.js';
 import { idParams } from '../validators/common.js';
-import { createResidentSchema, listResidentsQuery, updateResidentSchema } from '../validators/resident.schema.js';
+import { accountEmailSchema, createResidentSchema, credentialsSchema, listResidentsQuery, updateResidentSchema } from '../validators/resident.schema.js';
 
 // Property scope is enforced in the service layer (assertPropertyAccess via loadInScope).
 const router = Router();
@@ -20,6 +20,8 @@ router.get('/', readers, validate({ query: listResidentsQuery }), ctrl.list);
 router.get('/:id', readers, validate({ params: idParams }), ctrl.get);
 router.patch('/:id', writers, validate({ params: idParams, body: updateResidentSchema }), ctrl.update);
 router.get('/:id/balance', authorize('owner', 'warden', 'student'), validate({ params: idParams }), residentBalance);
+router.post('/:id/credentials', writers, validate({ params: idParams, body: credentialsSchema }), ctrl.credentials);
+router.patch('/:id/account-email', writers, validate({ params: idParams, body: accountEmailSchema }), ctrl.changeEmail);
 router.post('/:id/invite', writers, validate({ params: idParams }), ctrl.invite);
 
 export default router;

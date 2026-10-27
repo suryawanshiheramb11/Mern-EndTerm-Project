@@ -14,3 +14,4 @@ export const markNotificationRead = async (id) => data(await api.post(`/me/notif
 
 export const createRazorpayOrder = async (chargeId, amountPaise) => data(await api.post('/me/payments/razorpay/order', { chargeId, amountPaise })).order;
 export const verifyRazorpayPayment = async (response) => data(await api.post('/me/payments/razorpay/verify', response));
+export const updateMyDetails = async (body) => data(await api.patch('/me/details', body)).resident;

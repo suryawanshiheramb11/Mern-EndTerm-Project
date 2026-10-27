@@ -6,6 +6,8 @@ export const notificationsQuery = z.object({ ...pagination, unread: z.enum(['tru
 export const paymentIdParams = z.object({ paymentId: objectId });
 export const notificationParams = z.object({ id: objectId });
 
+export { selfDetailsSchema } from './resident.schema.js';
+
 export const razorpayOrderSchema = z.object({ chargeId: objectId, amountPaise: z.number().int().min(100).max(1_000_000_000).optional() }).strict();
 export const razorpayVerifySchema = z
   .object({
