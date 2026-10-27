@@ -9,7 +9,7 @@ export function ChargesTable({ items, showResident = true, isOwner, onAction }) 
   return (
     <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
       <table className="w-full text-left text-sm">
-        <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+        <thead className="bg-slate-50 text-xs font-medium text-slate-500">
           <tr>
             {showResident && <th className={th}>Resident</th>}
             <th className={th}>Month</th>
@@ -58,7 +58,7 @@ export function PaymentsTable({ items, showResident = true, isOwner, onAction })
   return (
     <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
       <table className="w-full text-left text-sm">
-        <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+        <thead className="bg-slate-50 text-xs font-medium text-slate-500">
           <tr>
             <th className={th}>Receipt</th>
             {showResident && <th className={th}>Resident</th>}

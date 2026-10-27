@@ -68,7 +68,7 @@ export default function ResidentDetailPage() {
         <Link to={`${ROLE_HOME[user.role]}/residents`} className="text-sm text-slate-500 hover:underline">
           ← Residents
         </Link>
-        <h1 className="text-xl font-bold text-slate-800">{r.fullName}</h1>
+        <h1 className="page-title">{r.fullName}</h1>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
@@ -122,7 +122,7 @@ export default function ResidentDetailPage() {
               <>
                 <p className="text-sm text-slate-500">{user.role === 'maintenance' ? 'Stay details are not available for your role.' : 'No active stay.'}</p>
                 {mayStay && r.status === 'active' && (
-                  <button type="button" onClick={() => setModal({ type: 'assign' })} className="mt-3 rounded-md bg-slate-800 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700">
+                  <button type="button" onClick={() => setModal({ type: 'assign' })} className="mt-3 rounded-md bg-accent px-3 py-2 text-sm font-medium text-onaccent hover:bg-accent-hover">
                     Assign bed
                   </button>
                 )}
@@ -137,7 +137,7 @@ export default function ResidentDetailPage() {
           <div className="flex items-center justify-between">
             <h2 className="font-semibold text-slate-800">Rent</h2>
             {mayPay && (
-              <button type="button" onClick={() => setModal({ type: 'pay' })} className="rounded-md bg-slate-800 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+              <button type="button" onClick={() => setModal({ type: 'pay' })} className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-onaccent hover:bg-accent-hover">
                 Record payment
               </button>
             )}
@@ -159,7 +159,7 @@ export default function ResidentDetailPage() {
           ) : (
             <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
               <table className="w-full text-left text-sm">
-                <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+                <thead className="bg-slate-50 text-xs font-medium text-slate-500">
                   <tr>
                     <th className="px-4 py-2">Bed</th>
                     <th className="px-4 py-2">From</th>

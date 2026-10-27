@@ -2,26 +2,126 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Print only the receipt when its modal is open. */
-@media print {
-  body * { visibility: hidden; }
-  #receipt-print, #receipt-print * { visibility: visible; }
-  #receipt-print { position: absolute; left: 0; top: 0; width: 100%; }
+/*
+  StayOS design tokens. Colours are space-separated RGB so Tailwind can apply opacity.
+  Light and dark follow the system setting; there is no in-app appearance switch.
+  Contrast (WCAG, text on its surface): label 16.8:1, secondary 6.0:1, accent 6.9:1, signals 4.8-6.3:1 in light;
+  label 15.6:1, secondary 6.6:1, accent 6.7:1, signals 6.4-10.6:1 in dark.
+*/
+:root {
+  color-scheme: light dark;
+
+  --surface: 255 255 255;
+  --slate-50: 245 245 247; /* page background */
+  --slate-100: 237 237 240; /* fills, hover */
+  --slate-200: 226 226 231; /* separators */
+  --slate-300: 174 174 178; /* control borders */
+  --slate-400: 117 117 121; /* tertiary text */
+  --slate-500: 99 99 102; /* secondary text */
+  --slate-600: 72 72 74;
+  --slate-700: 58 58 60;
+  --slate-800: 29 29 31; /* primary text */
+  --slate-900: 17 17 19;
+
+  --accent: 79 70 200;
+  --accent-hover: 64 56 170;
+  --accent-ink: 79 70 200; /* accent used as text/links */
+  --accent-tint: 237 236 251;
+  --danger: 196 40 28;
+
+  --red-50: 253 236 234; --red-300: 240 160 154; --red-600: 196 40 28; --red-700: 179 38 30;
+  --amber-50: 255 244 220; --amber-200: 245 215 140; --amber-300: 235 190 90; --amber-500: 230 150 20; --amber-800: 138 83 0; --amber-900: 110 66 0;
+  --orange-50: 255 240 228; --orange-300: 245 180 120; --orange-500: 235 120 30; --orange-800: 150 70 10;
+  --green-50: 230 244 234; --green-700: 27 122 58; --green-800: 21 100 47; --green-900: 16 80 38;
+  --emerald-50: 230 244 234; --emerald-300: 150 210 175; --emerald-500: 40 160 90; --emerald-700: 27 122 58; --emerald-800: 21 100 47;
+  --blue-50: 232 241 251; --blue-200: 175 205 240; --blue-700: 11 92 173; --blue-900: 8 60 120;
+  --indigo-50: 237 236 251; --indigo-700: 79 70 200;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface: 28 28 30;
+    --slate-50: 18 18 20;
+    --slate-100: 44 44 46;
+    --slate-200: 56 56 58;
+    --slate-300: 84 84 88;
+    --slate-400: 142 142 147;
+    --slate-500: 161 161 166;
+    --slate-600: 199 199 204;
+    --slate-700: 216 216 220;
+    --slate-800: 245 245 247;
+    --slate-900: 255 255 255;
+
+    --accent: 91 85 224;
+    --accent-hover: 108 102 235;
+    --accent-ink: 155 151 255;
+    --accent-tint: 37 35 77;
+    --danger: 217 58 47;
+
+    --red-50: 58 21 18; --red-300: 120 50 45; --red-600: 255 138 128; --red-700: 255 138 128;
+    --amber-50: 58 42 8; --amber-200: 110 80 20; --amber-300: 140 100 20; --amber-500: 255 194 90; --amber-800: 255 194 90; --amber-900: 255 210 130;
+    --orange-50: 58 30 10; --orange-300: 140 80 30; --orange-500: 255 170 100; --orange-800: 255 170 100;
+    --green-50: 16 48 27; --green-700: 76 210 122; --green-800: 100 220 140; --green-900: 130 230 165;
+    --emerald-50: 16 48 27; --emerald-300: 40 100 65; --emerald-500: 76 210 122; --emerald-700: 76 210 122; --emerald-800: 100 220 140;
+    --blue-50: 15 42 71; --blue-200: 40 80 130; --blue-700: 100 176 255; --blue-900: 150 200 255;
+    --indigo-50: 37 35 77; --indigo-700: 155 151 255;
+  }
+}
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    @apply bg-slate-50 text-slate-800 antialiased;
+    font-size: 15px;
+    line-height: 1.45;
+    font-feature-settings: 'ss01', 'cv11';
+  }
+  h1, h2, h3 { letter-spacing: -0.014em; }
+  /* Figures line up in columns and don't jitter as values change. */
+  td, th, .tnum { font-variant-numeric: tabular-nums; }
+  ::selection { background: rgb(var(--accent) / 0.25); }
+
+  /* Visible keyboard focus everywhere; utilities that remove the default outline don't win. */
+  :focus-visible { outline: 2px solid rgb(var(--accent-ink)) !important; outline-offset: 2px; }
+
+  /* Controls: comfortable on desktop, 44px for touch. */
+  button, select, input:not([type='checkbox']):not([type='radio']) { min-height: 32px; }
+  @media (pointer: coarse) {
+    button, select, input:not([type='checkbox']):not([type='radio']) { min-height: 44px; }
+  }
+  button, a { transition: background-color 120ms ease, opacity 120ms ease, transform 120ms ease; }
+  /* Press state for custom buttons. */
+  button:not(:disabled):active { transform: scale(0.98); opacity: 0.86; }
+  button:disabled { cursor: not-allowed; }
+
+  input, select, textarea { @apply bg-white; border-radius: 10px; }
+  input::placeholder, textarea::placeholder { @apply text-slate-400; }
+
+  tbody tr { transition: background-color 120ms ease; }
+  tbody tr:hover { background-color: rgb(var(--slate-50) / 0.7); }
+}
+
+@layer components {
+  .page-title { @apply text-2xl font-semibold tracking-tight text-slate-800; }
+  .card { @apply rounded-lg border border-slate-200 bg-white shadow-card; }
+  /* Floating functional layer only (bars, sheets): never behind reading content. */
+  .glass { background: rgb(var(--surface) / 0.88); backdrop-filter: saturate(180%) blur(24px); -webkit-backdrop-filter: saturate(180%) blur(24px); }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass { background: rgb(var(--surface)); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  button:not(:disabled):active { transform: none; }
+}
+@media (prefers-contrast: more) {
+  :root { --slate-300: 99 99 102; --slate-200: 142 142 147; }
 }
 
 /* Print only the receipt: hide the app chrome and any modal backdrop around it. */
 @media print {
-  body * {
-    visibility: hidden;
-  }
-  #receipt-print,
-  #receipt-print * {
-    visibility: visible;
-  }
-  #receipt-print {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-  }
+  body * { visibility: hidden; }
+  #receipt-print, #receipt-print * { visibility: visible; }
+  #receipt-print { position: absolute; left: 0; top: 0; width: 100%; }
 }

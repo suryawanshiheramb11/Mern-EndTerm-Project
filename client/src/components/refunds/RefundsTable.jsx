@@ -8,7 +8,7 @@ export default function RefundsTable({ items, showResident = true, isOwner, onAc
   return (
     <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
       <table className="w-full text-left text-sm">
-        <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+        <thead className="bg-slate-50 text-xs font-medium text-slate-500">
           <tr>
             {showResident && <th className="px-4 py-2">Resident</th>}
             <th className="px-4 py-2 text-right">Deposit</th>

@@ -31,7 +31,7 @@ export default function NotificationsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-slate-800">Notifications {query.data?.unreadCount > 0 && <span className="text-sm font-normal text-slate-500">({query.data.unreadCount} unread)</span>}</h1>
+        <h1 className="page-title">Notifications {query.data?.unreadCount > 0 && <span className="text-sm font-normal text-slate-500">({query.data.unreadCount} unread)</span>}</h1>
         <label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" checked={unreadOnly} onChange={(e) => setUnreadOnly(e.target.checked)} /> Unread only</label>
       </div>
       <ErrorBanner error={query.error ?? error} />

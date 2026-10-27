@@ -65,7 +65,7 @@ export function InviteStaffModal({ propertyId, onClose }) {
             <input readOnly value={link} onFocus={(e) => e.target.select()} className="mt-2 w-full rounded border border-amber-300 bg-white px-2 py-1 font-mono" />
           </div>
         )}
-        <div className="mt-4 flex justify-end"><button type="button" onClick={onClose} className="rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white">Done</button></div>
+        <div className="mt-4 flex justify-end"><button type="button" onClick={onClose} className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-onaccent">Done</button></div>
       </Modal>
     );
   }
@@ -80,7 +80,7 @@ export function InviteStaffModal({ propertyId, onClose }) {
         <PermissionBoxes value={permissions} onChange={setPermissions} />
         <div className="flex justify-end gap-2 pt-2">
           <button type="button" onClick={onClose} className="rounded-md border border-slate-300 px-3 py-2 text-sm">Cancel</button>
-          <button type="submit" disabled={busy} className="rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-60">{busy ? 'Sending…' : 'Send invite'}</button>
+          <button type="submit" disabled={busy} className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-onaccent hover:bg-accent-hover disabled:opacity-60">{busy ? 'Sending…' : 'Send invite'}</button>
         </div>
       </form>
     </Modal>

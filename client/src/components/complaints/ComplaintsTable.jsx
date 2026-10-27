@@ -5,7 +5,7 @@ export default function ComplaintsTable({ items, showResident = true, onOpen }) 
   return (
     <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
       <table className="w-full text-left text-sm">
-        <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+        <thead className="bg-slate-50 text-xs font-medium text-slate-500">
           <tr>
             <th className="px-4 py-2">#</th>
             <th className="px-4 py-2">Issue</th>

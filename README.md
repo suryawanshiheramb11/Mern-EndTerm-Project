@@ -305,6 +305,17 @@ Concurrency is covered where it lives: bed double assignment (`stays`), duplicat
 - [ ] Do not run the seed script against production data (it refuses without `--allow-production`).
 - [ ] Ship logs somewhere durable; the audit log is in MongoDB, so back it up with the rest.
 
+## Design system
+
+The client follows Apple's Human Interface Guidelines principles (via the `apple-design` skill), adapted for the web.
+
+- **Tokens:** every colour is a CSS variable in `client/src/index.css`, mapped into Tailwind in `client/tailwind.config.js`. Light and dark follow the system setting; there is no in-app switch. Text contrast is at least 4.5:1 in both (the numbers are in the CSS header comment).
+- **One accent:** indigo is used only for primary actions, the selected nav item and links. Green, red, amber and blue are reserved for status.
+- **Type:** the system font stack (SF on Apple devices), tabular figures for money, no embedded fonts.
+- **Surfaces:** glass (blur) is used only on floating bars (top bar, student tab bar) and sheets, never behind content. It turns solid under reduced transparency; animations stop under reduced motion.
+- **Navigation:** the owner and staff sidebar becomes a menu sheet below `md`. Students get a four-tab bottom bar on phones; notifications live in the bell.
+- **Controls:** at least 32px on desktop and 44px on touch, a visible keyboard focus ring everywhere, and a press state on buttons.
+
 ## Known limitations and next steps
 
 - **No payment gateway.** Payments are recorded by staff and verified by an owner; there is no online collection, settlement or reconciliation. A gateway would add a `verified` source and webhook handling in the payment service.

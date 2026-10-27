@@ -19,7 +19,7 @@ function Table({ head, rows, empty = 'No data for this selection.' }) {
   return (
     <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
       <table className="w-full text-left text-sm">
-        <thead className="bg-slate-50 text-xs uppercase text-slate-500"><tr>{head.map((h, i) => <th key={h} className={`${th} ${i > 0 ? 'text-right' : ''}`}>{h}</th>)}</tr></thead>
+        <thead className="bg-slate-50 text-xs font-medium text-slate-500"><tr>{head.map((h, i) => <th key={h} className={`${th} ${i > 0 ? 'text-right' : ''}`}>{h}</th>)}</tr></thead>
         <tbody className="divide-y divide-slate-100">
           {rows.map((r) => <tr key={r.key}>{r.cells.map((c, i) => <td key={i} className={`px-4 py-2 ${i > 0 ? 'text-right' : ''}`}>{c}</td>)}</tr>)}
         </tbody>
@@ -61,14 +61,14 @@ export default function ReportsPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-bold text-slate-800">Reports</h1>
+        <h1 className="page-title">Reports</h1>
         <PropertyPicker items={items} value={propertyId} onChange={setSelected} />
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
         <div role="tablist" className="flex gap-1">
           {TABS.map((t) => (
-            <button key={t} type="button" role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={`rounded-md px-3 py-2 text-sm font-medium capitalize ${tab === t ? 'bg-slate-800 text-white' : 'text-slate-600 hover:bg-slate-100'}`}>{t}</button>
+            <button key={t} type="button" role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={`rounded-md px-3 py-2 text-sm font-medium capitalize ${tab === t ? 'bg-accent text-onaccent' : 'text-slate-600 hover:bg-slate-100'}`}>{t}</button>
           ))}
         </div>
         {tab !== 'outstanding' && tab !== 'trend' && (

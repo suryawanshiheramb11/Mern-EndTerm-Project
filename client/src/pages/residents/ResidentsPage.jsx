@@ -26,9 +26,9 @@ export default function ResidentsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-slate-800">Residents</h1>
+        <h1 className="page-title">Residents</h1>
         {writable.length > 0 && (
-          <button type="button" onClick={() => setCreating(true)} className="rounded-md bg-slate-800 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700">
+          <button type="button" onClick={() => setCreating(true)} className="rounded-md bg-accent px-3 py-2 text-sm font-medium text-onaccent hover:bg-accent-hover">
             Add resident
           </button>
         )}
@@ -67,7 +67,7 @@ export default function ResidentsPage() {
         ) : (
           <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
             <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+              <thead className="bg-slate-50 text-xs font-medium text-slate-500">
                 <tr>
                   <th className="px-4 py-2">Name</th>
                   <th className="px-4 py-2">Phone</th>

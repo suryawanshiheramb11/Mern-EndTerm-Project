@@ -15,9 +15,9 @@ export default function PropertiesPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-slate-800">Properties</h1>
+        <h1 className="page-title">Properties</h1>
         {user.role === 'owner' && (
-          <button type="button" onClick={() => setCreating(true)} className="rounded-md bg-slate-800 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700">
+          <button type="button" onClick={() => setCreating(true)} className="rounded-md bg-accent px-3 py-2 text-sm font-medium text-onaccent hover:bg-accent-hover">
             New property
           </button>
         )}

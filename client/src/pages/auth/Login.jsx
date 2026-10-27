@@ -31,7 +31,8 @@ export default function Login() {
 
   return (
     <AuthForm
-      title="Log in to StayOS"
+      title="Log in"
+      subtitle="Welcome back."
       error={error}
       submitting={submitting}
       submitLabel="Log in"
@@ -39,7 +40,7 @@ export default function Login() {
       footer={
         <>
           New owner?{' '}
-          <Link to="/register" className="font-medium text-slate-800 underline">
+          <Link to="/register" className="font-medium text-accent-ink hover:underline">
             Create an account
           </Link>
         </>

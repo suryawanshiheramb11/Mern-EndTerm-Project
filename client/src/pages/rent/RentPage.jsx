@@ -61,7 +61,7 @@ export default function RentPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-bold text-slate-800">Rent</h1>
+        <h1 className="page-title">Rent</h1>
         <div className="flex flex-wrap gap-2">
           {isOwner && (
             <>
@@ -74,7 +74,7 @@ export default function RentPage() {
             </>
           )}
           {mayRecord && (
-            <button type="button" onClick={() => setModal('pay')} className="rounded-md bg-slate-800 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700">
+            <button type="button" onClick={() => setModal('pay')} className="rounded-md bg-accent px-3 py-2 text-sm font-medium text-onaccent hover:bg-accent-hover">
               Record payment
             </button>
           )}
@@ -95,7 +95,7 @@ export default function RentPage() {
               role="tab"
               aria-selected={tab === t.id}
               onClick={() => setTab(t.id)}
-              className={`rounded-md px-3 py-2 text-sm font-medium ${tab === t.id ? 'bg-slate-800 text-white' : 'text-slate-600 hover:bg-slate-100'}`}
+              className={`rounded-md px-3 py-2 text-sm font-medium ${tab === t.id ? 'bg-accent text-onaccent' : 'text-slate-600 hover:bg-slate-100'}`}
             >
               {t.label}
             </button>

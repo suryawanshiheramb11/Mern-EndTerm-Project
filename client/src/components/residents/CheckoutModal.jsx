@@ -95,7 +95,7 @@ export default function CheckoutModal({ stay, onClose }) {
           </ul>
         )}
         <div className="mt-4 flex justify-end">
-          <button type="button" onClick={onClose} className="rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white">Done</button>
+          <button type="button" onClick={onClose} className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-onaccent">Done</button>
         </div>
       </Modal>
     );
@@ -185,11 +185,11 @@ export default function CheckoutModal({ stay, onClose }) {
             {step === 1 ? 'Cancel' : 'Back'}
           </button>
           {step === 1 ? (
-            <button type="button" disabled={!p} onClick={() => setStep(2)} className="rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">
+            <button type="button" disabled={!p} onClick={() => setStep(2)} className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-onaccent disabled:opacity-50">
               Review
             </button>
           ) : (
-            <button type="button" disabled={!canConfirm || busy} onClick={confirm} className="rounded-md bg-red-700 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">
+            <button type="button" disabled={!canConfirm || busy} onClick={confirm} className="rounded-md bg-danger px-4 py-2 text-sm font-medium text-onaccent disabled:opacity-50">
               {busy ? 'Checking out…' : 'Confirm check-out'}
             </button>
           )}

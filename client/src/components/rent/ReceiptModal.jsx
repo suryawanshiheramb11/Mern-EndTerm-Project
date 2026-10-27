@@ -61,7 +61,7 @@ export default function ReceiptModal({ paymentId, onClose }) {
           </div>
           <div className="mt-4 flex justify-end gap-2 print:hidden">
             <button type="button" onClick={onClose} className="rounded-md border border-slate-300 px-3 py-2 text-sm">Close</button>
-            <button type="button" onClick={() => window.print()} className="rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">Print</button>
+            <button type="button" onClick={() => window.print()} className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-onaccent hover:bg-accent-hover">Print</button>
           </div>
         </>
       )}

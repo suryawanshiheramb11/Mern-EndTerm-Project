@@ -1,6 +1,6 @@
 // Presentation only: scales the server-provided series into an SVG polyline.
 export default function Sparkline({ values, label, width = 96, height = 28 }) {
-  if (!values?.length || values.every((v) => v === 0)) return <span className="text-xs text-slate-300" aria-label={`${label}: no data`}>no trend yet</span>;
+  if (!values?.length || values.every((v) => v === 0)) return <span className="text-xs text-slate-400" aria-label={`${label}: no data`}>no trend yet</span>;
   const max = Math.max(...values);
   const min = Math.min(...values, 0);
   const span = max - min || 1;

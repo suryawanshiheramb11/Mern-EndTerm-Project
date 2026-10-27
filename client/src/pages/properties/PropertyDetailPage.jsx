@@ -18,7 +18,7 @@ const TABS = [
 function Stat({ label, value }) {
   return (
     <div className="rounded-lg border border-slate-200 bg-white px-4 py-3">
-      <div className="text-xs uppercase text-slate-500">{label}</div>
+      <div className="text-xs font-medium text-slate-500">{label}</div>
       <div className="text-lg font-semibold text-slate-800">{value}</div>
     </div>
   );
@@ -45,7 +45,7 @@ export default function PropertyDetailPage() {
         <Link to={propertiesPath(user.role)} className="text-sm text-slate-500 hover:underline">
           ← Properties
         </Link>
-        <h1 className="text-xl font-bold text-slate-800">{p.name}</h1>
+        <h1 className="page-title">{p.name}</h1>
         <p className="text-sm text-slate-500">
           {p.address.line1}, {p.address.city}, {p.address.state} {p.address.pincode}
         </p>

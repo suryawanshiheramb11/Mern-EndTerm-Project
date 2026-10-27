@@ -13,8 +13,8 @@ export default function StudentComplaints() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-slate-800">My complaints</h1>
-        <button type="button" onClick={() => setRaising(true)} className="rounded-md bg-slate-800 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700">Raise complaint</button>
+        <h1 className="page-title">My complaints</h1>
+        <button type="button" onClick={() => setRaising(true)} className="rounded-md bg-accent px-3 py-2 text-sm font-medium text-onaccent hover:bg-accent-hover">Raise complaint</button>
       </div>
       <ErrorBanner error={complaints.error} />
       <ComplaintsTable items={complaints.data?.items ?? []} showResident={false} onOpen={setOpenId} />

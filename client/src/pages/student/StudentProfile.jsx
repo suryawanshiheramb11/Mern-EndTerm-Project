@@ -18,7 +18,7 @@ export default function StudentProfile() {
   const { user, resident, property } = data;
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold text-slate-800">Profile</h1>
+      <h1 className="page-title">Profile</h1>
       <section className="rounded-lg border border-slate-200 bg-white p-4">
         <h2 className="mb-2 font-semibold text-slate-800">Account</h2>
         <dl>

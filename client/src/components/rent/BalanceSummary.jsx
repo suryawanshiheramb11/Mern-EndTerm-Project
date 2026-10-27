@@ -6,7 +6,7 @@ import { getBalance } from '../../services/rent.js';
 function Stat({ label, value, tone, hint }) {
   return (
     <div className="rounded-lg border border-slate-200 bg-white px-4 py-3">
-      <div className="text-xs uppercase text-slate-500">{label}</div>
+      <div className="text-xs font-medium text-slate-500">{label}</div>
       <div className={`text-lg font-semibold ${tone ?? 'text-slate-800'}`}>{formatPaise(value)}</div>
       {hint && <div className="text-xs text-slate-400">{hint}</div>}
     </div>

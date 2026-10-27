@@ -14,7 +14,7 @@ export default function StudentRent() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-bold text-slate-800">Rent history</h1>
+      <h1 className="page-title">Rent history</h1>
       <section className="space-y-2">
         <h2 className="font-semibold text-slate-800">Rent charges</h2>
         <ErrorBanner error={charges.error} />

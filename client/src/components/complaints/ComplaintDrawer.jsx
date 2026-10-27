@@ -9,7 +9,7 @@ import { PriorityBadge, SlaBadge, StatusBadge, UrgencyBadge } from './Badges.jsx
 const PRIORITIES = ['low', 'medium', 'high', 'urgent'];
 const when = (iso) => new Date(iso).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 const btn = 'rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium hover:bg-slate-50';
-const primary = 'rounded-md bg-slate-800 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-60';
+const primary = 'rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-onaccent hover:bg-accent-hover disabled:opacity-60';
 
 function Link({ href, children }) {
   return /^https:\/\//.test(href) ? (

@@ -30,7 +30,7 @@ export default function StaffTab({ propertyId }) {
     <div className="space-y-3">
       <div className="flex flex-wrap justify-end gap-2">
         <button type="button" onClick={() => setModal({ type: 'announce' })} className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium hover:bg-slate-50">Send announcement</button>
-        <button type="button" onClick={() => setModal({ type: 'invite' })} className="rounded-md bg-slate-800 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700">Invite staff</button>
+        <button type="button" onClick={() => setModal({ type: 'invite' })} className="rounded-md bg-accent px-3 py-2 text-sm font-medium text-onaccent hover:bg-accent-hover">Invite staff</button>
       </div>
       <ErrorBanner error={staff.error ?? error} />
       {staff.isLoading ? <p className="text-slate-500">Loading…</p> : rows.length === 0 ? (
@@ -38,7 +38,7 @@ export default function StaffTab({ propertyId }) {
       ) : (
         <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
           <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase text-slate-500"><tr><th className="px-4 py-2">Name</th><th className="px-4 py-2">Role</th><th className="px-4 py-2">Permissions</th><th className="px-4 py-2">Status</th><th className="px-4 py-2" /></tr></thead>
+            <thead className="bg-slate-50 text-xs font-medium text-slate-500"><tr><th className="px-4 py-2">Name</th><th className="px-4 py-2">Role</th><th className="px-4 py-2">Permissions</th><th className="px-4 py-2">Status</th><th className="px-4 py-2" /></tr></thead>
             <tbody className="divide-y divide-slate-100">
               {rows.map((m) => (
                 <tr key={m.id}>

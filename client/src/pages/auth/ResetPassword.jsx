@@ -30,7 +30,7 @@ export default function ResetPassword() {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-slate-50 text-slate-800">
         <p>Your password has been set.</p>
-        <Link to="/login" className="font-medium underline">
+        <Link to="/login" className="font-medium text-accent-ink hover:underline">
           Log in
         </Link>
       </div>

@@ -25,7 +25,7 @@ export default function ComplaintsPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold text-slate-800">{tasks ? 'My tasks' : 'Complaints'}</h1>
+      <h1 className="page-title">{tasks ? 'My tasks' : 'Complaints'}</h1>
       <div className="flex flex-wrap items-center gap-3">
         <select aria-label="Property" value={f.propertyId} onChange={set('propertyId')} className={select}>
           <option value="">All properties</option>

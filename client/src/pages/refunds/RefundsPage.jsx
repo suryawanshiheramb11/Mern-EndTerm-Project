@@ -43,7 +43,7 @@ export default function RefundsPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold text-slate-800">Refunds</h1>
+      <h1 className="page-title">Refunds</h1>
       <div className="flex flex-wrap gap-3">
         <select aria-label="Property" value={propertyId} onChange={(e) => setPropertyId(e.target.value)} className={select}>
           <option value="">All properties</option>

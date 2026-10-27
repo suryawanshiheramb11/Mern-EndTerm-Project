@@ -10,7 +10,7 @@ export default function RolePlaceholder({ title }) {
       <button
         type="button"
         onClick={logout}
-        className="rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700"
+        className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-onaccent hover:bg-accent-hover"
       >
         Log out
       </button>

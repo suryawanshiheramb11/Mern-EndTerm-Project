@@ -64,7 +64,7 @@ export default function BedsTab({ propertyId }) {
             ))}
           </select>
           {editable && (
-            <button type="button" onClick={() => setAdding({})} className="rounded-md bg-slate-800 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700">
+            <button type="button" onClick={() => setAdding({})} className="rounded-md bg-accent px-3 py-2 text-sm font-medium text-onaccent hover:bg-accent-hover">
               Add beds
             </button>
           )}

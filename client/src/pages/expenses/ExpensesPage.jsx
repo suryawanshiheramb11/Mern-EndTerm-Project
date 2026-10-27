@@ -30,10 +30,10 @@ export default function ExpensesPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-bold text-slate-800">Expenses</h1>
+        <h1 className="page-title">Expenses</h1>
         <div className="flex gap-2">
           <PropertyPicker items={properties} value={propertyId} onChange={setSelected} />
-          {canEdit && <button type="button" disabled={!propertyId} onClick={() => setModal({ type: 'edit' })} className="rounded-md bg-slate-800 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-50">Add expense</button>}
+          {canEdit && <button type="button" disabled={!propertyId} onClick={() => setModal({ type: 'edit' })} className="rounded-md bg-accent px-3 py-2 text-sm font-medium text-onaccent hover:bg-accent-hover disabled:opacity-50">Add expense</button>}
         </div>
       </div>
 
@@ -53,7 +53,7 @@ export default function ExpensesPage() {
       ) : (
         <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
           <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+            <thead className="bg-slate-50 text-xs font-medium text-slate-500">
               <tr><th className="px-4 py-2">Date</th><th className="px-4 py-2">Category</th><th className="px-4 py-2">Description</th><th className="px-4 py-2">Vendor</th><th className="px-4 py-2">Status</th><th className="px-4 py-2 text-right">Amount</th><th className="px-4 py-2" /></tr>
             </thead>
             <tbody className="divide-y divide-slate-100">

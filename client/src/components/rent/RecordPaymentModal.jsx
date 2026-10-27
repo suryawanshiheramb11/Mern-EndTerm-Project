@@ -120,7 +120,7 @@ export default function RecordPaymentModal({ propertyId, residentId: presetResid
           <p className="text-sm text-slate-500">{balance.isLoading ? 'Loading…' : 'Nothing is outstanding for this resident.'}</p>
         ) : (
           <table className="w-full text-sm">
-            <thead className="text-xs uppercase text-slate-500">
+            <thead className="text-xs font-medium text-slate-500">
               <tr>
                 <th className="py-1 text-left">Month</th>
                 <th className="py-1 text-right">Outstanding</th>

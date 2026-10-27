@@ -35,7 +35,7 @@ export default function RoomsTab({ propertyId }) {
       <div className="flex items-center justify-between">
         <h2 className="font-semibold text-slate-800">Rooms ({data.pagination.total})</h2>
         {editable && (
-          <button type="button" onClick={() => setModal({})} className="rounded-md bg-slate-800 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700">
+          <button type="button" onClick={() => setModal({})} className="rounded-md bg-accent px-3 py-2 text-sm font-medium text-onaccent hover:bg-accent-hover">
             Add room
           </button>
         )}
@@ -47,7 +47,7 @@ export default function RoomsTab({ propertyId }) {
       ) : (
         <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
           <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+            <thead className="bg-slate-50 text-xs font-medium text-slate-500">
               <tr>
                 <th className="px-4 py-2">Room</th>
                 <th className="px-4 py-2">Floor</th>
