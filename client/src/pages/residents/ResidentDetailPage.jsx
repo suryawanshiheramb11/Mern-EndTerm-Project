@@ -84,7 +84,7 @@ export default function ResidentDetailPage() {
             <Row label="Phone">{r.phone}</Row>
             <Row label="Email">{r.email ?? '—'}</Row>
             <Row label="Emergency contact">{r.emergencyContact?.name ? `${r.emergencyContact.name} · ${r.emergencyContact.phone ?? ''}` : '—'}</Row>
-            <Row label="ID verification">{r.idVerification.status.replace('_', ' ')}</Row>
+            {r.idVerification && <Row label="ID verification">{r.idVerification.status.replace('_', ' ')}</Row>}
             <Row label="Status">{r.status}</Row>
             {r.notes && <Row label="Notes">{r.notes}</Row>}
           </dl>

@@ -97,7 +97,7 @@ export default function ResidentsPage() {
                         <span className="text-slate-400">Unassigned</span>
                       )}
                     </td>
-                    <td className="px-4 py-2 capitalize">{r.idVerification.status.replace('_', ' ')}</td>
+                    <td className="px-4 py-2 capitalize">{r.idVerification?.status?.replace('_', ' ') ?? '—'}</td>
                   </tr>
                 ))}
               </tbody>

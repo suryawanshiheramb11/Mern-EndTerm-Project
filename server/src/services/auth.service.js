@@ -162,7 +162,9 @@ export const changePassword = async (userId, { currentPassword, newPassword }, m
   } else if (currentPassword && !(await bcrypt.compare(currentPassword, user.passwordHash))) {
     throw ApiError.badRequest('Current password is incorrect');
   }
-  if (await bcrypt.compare(newPassword, user.passwordHash)) throw ApiError.badRequest('Choose a password you have not used just now');
+  // Same-as-current check without a third bcrypt run when the caller supplied the current password.
+  const same = currentPassword ? currentPassword === newPassword : await bcrypt.compare(newPassword, user.passwordHash);
+  if (same) throw ApiError.badRequest('Choose a password you have not used just now');
   if (newPassword.toLowerCase().includes(user.email.split('@')[0]) && user.email.split('@')[0].length >= 4) throw ApiError.badRequest('Password must not contain your email name');
 
   user.password = newPassword;
