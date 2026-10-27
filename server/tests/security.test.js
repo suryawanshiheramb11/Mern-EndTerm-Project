@@ -109,8 +109,8 @@ describe('permission matrix', () => {
       // [name, method, url, body, expected]
       ['list properties', 'get', '/api/properties', undefined, { ...staffOnly, wardenNone: 200, maintenance: 200, stranger: 200 }],
       ['property detail', 'get', `/api/properties/${p}`, undefined, { ...staffOnly, wardenNone: 200, maintenance: 200 }],
-      ['resident detail', 'get', `/api/residents/${w.resident.id}`, undefined, { ...staffOnly, maintenance: 200 }],
-      ['resident list', 'get', `/api/residents?propertyId=${p}`, undefined, { ...staffOnly, maintenance: 200 }],
+      ['resident detail', 'get', `/api/residents/${w.resident.id}`, undefined, { ...staffOnly, maintenance: 403 }],
+      ['resident list', 'get', `/api/residents?propertyId=${p}`, undefined, { ...staffOnly, maintenance: 403 }],
       ['create resident', 'post', '/api/residents', { propertyId: p, fullName: 'Matrix Person', phone: '9812345678' }, { ...deny, owner: 201, wardenFull: 201 }],
       ['create room', 'post', `/api/properties/${p}/rooms`, { number: '777', capacity: 2 }, { ...deny, owner: 201 }],
       ['stay detail', 'get', `/api/stays/${w.stay.id}`, undefined, staffOnly],

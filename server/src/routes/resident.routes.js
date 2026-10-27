@@ -10,7 +10,8 @@ import { accountEmailSchema, createResidentSchema, credentialsSchema, listReside
 // Property scope is enforced in the service layer (assertPropertyAccess via loadInScope).
 const router = Router();
 
-const readers = authorize('owner', 'warden', 'maintenance');
+// Residents' personal details are not for maintenance staff, whatever grants are stored for them.
+const readers = authorize('owner', 'warden');
 const writers = authorize('owner', 'warden');
 
 router.use(authenticate);

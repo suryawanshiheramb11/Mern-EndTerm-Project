@@ -441,13 +441,13 @@ describe('residents', () => {
     expect(patched.body.data.resident).toMatchObject({ notes: 'Vegetarian', emergencyContact: { phone: '9000000000' } });
   });
 
-  it('gives maintenance read-only access', async () => {
+  it('keeps the residents list away from maintenance, even with a stored grant', async () => {
     const { owner, property } = await setup();
     const resident = await addResident(owner, property.id);
     const maint = await createStaff('maintenance', [{ property: property.id, permissions: [PERMISSIONS.RESIDENTS_VIEW] }]);
 
-    expect((await maint.get('/api/residents')).body.data.items).toHaveLength(1);
-    expect((await maint.get(`/api/residents/${resident.id}`)).status).toBe(200);
+    expect((await maint.get('/api/residents')).status).toBe(403);
+    expect((await maint.get(`/api/residents/${resident.id}`)).status).toBe(403);
     expect((await maint.post('/api/residents').send({ propertyId: property.id, fullName: 'Nope Nope', phone: '9876543210' })).status).toBe(403);
     expect((await maint.patch(`/api/residents/${resident.id}`).send({ notes: 'x' })).status).toBe(403);
     expect((await maint.get('/api/stays')).status).toBe(403);

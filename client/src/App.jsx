@@ -1,28 +1,29 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home.jsx';
-import Pricing from './pages/Pricing.jsx';
+const Pricing = lazy(() => import('./pages/Pricing.jsx'));
 import Login from './pages/auth/Login.jsx';
-import Register from './pages/auth/Register.jsx';
-import ChangePassword from './pages/auth/ChangePassword.jsx';
+const Register = lazy(() => import('./pages/auth/Register.jsx'));
+const ChangePassword = lazy(() => import('./pages/auth/ChangePassword.jsx'));
 import UrlMask from './components/UrlMask.jsx';
 import Forbidden from './pages/Forbidden.jsx';
 import StudentShell from './layouts/StudentShell.jsx';
-import StudentDashboard from './pages/student/StudentDashboard.jsx';
-import StudentRent from './pages/student/StudentRent.jsx';
-import StudentComplaints from './pages/student/StudentComplaints.jsx';
-import StudentProfile from './pages/student/StudentProfile.jsx';
-import NotificationsPage from './pages/notifications/NotificationsPage.jsx';
-import PropertiesPage from './pages/properties/PropertiesPage.jsx';
-import PropertyDetailPage from './pages/properties/PropertyDetailPage.jsx';
-import ResidentsPage from './pages/residents/ResidentsPage.jsx';
-import ResidentDetailPage from './pages/residents/ResidentDetailPage.jsx';
-import RentPage from './pages/rent/RentPage.jsx';
-import RefundsPage from './pages/refunds/RefundsPage.jsx';
-import ComplaintsPage from './pages/complaints/ComplaintsPage.jsx';
-import DashboardPage from './pages/dashboard/DashboardPage.jsx';
-import ReportsPage from './pages/reports/ReportsPage.jsx';
-import ExpensesPage from './pages/expenses/ExpensesPage.jsx';
-import ResetPassword from './pages/auth/ResetPassword.jsx';
+const StudentDashboard = lazy(() => import('./pages/student/StudentDashboard.jsx'));
+const StudentRent = lazy(() => import('./pages/student/StudentRent.jsx'));
+const StudentComplaints = lazy(() => import('./pages/student/StudentComplaints.jsx'));
+const StudentProfile = lazy(() => import('./pages/student/StudentProfile.jsx'));
+const NotificationsPage = lazy(() => import('./pages/notifications/NotificationsPage.jsx'));
+const PropertiesPage = lazy(() => import('./pages/properties/PropertiesPage.jsx'));
+const PropertyDetailPage = lazy(() => import('./pages/properties/PropertyDetailPage.jsx'));
+const ResidentsPage = lazy(() => import('./pages/residents/ResidentsPage.jsx'));
+const ResidentDetailPage = lazy(() => import('./pages/residents/ResidentDetailPage.jsx'));
+const RentPage = lazy(() => import('./pages/rent/RentPage.jsx'));
+const RefundsPage = lazy(() => import('./pages/refunds/RefundsPage.jsx'));
+const ComplaintsPage = lazy(() => import('./pages/complaints/ComplaintsPage.jsx'));
+const DashboardPage = lazy(() => import('./pages/dashboard/DashboardPage.jsx'));
+const ReportsPage = lazy(() => import('./pages/reports/ReportsPage.jsx'));
+const ExpensesPage = lazy(() => import('./pages/expenses/ExpensesPage.jsx'));
+const ResetPassword = lazy(() => import('./pages/auth/ResetPassword.jsx'));
 import AppShell from './layouts/AppShell.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import RequirePermission from './components/RequirePermission.jsx';
@@ -39,6 +40,7 @@ export default function App() {
   return (
     <>
     <UrlMask />
+    <Suspense fallback={<div className="min-h-screen bg-slate-50" aria-busy="true" />}>
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/pricing" element={<Pricing />} />
@@ -58,8 +60,8 @@ export default function App() {
             {role !== 'maintenance' && <Route path={`${ROLE_HOME[role]}/expenses`} element={guard([P.FINANCES_VIEW], <ExpensesPage />)} />}
             {role !== 'maintenance' && <Route path={`${ROLE_HOME[role]}/reports`} element={guard([P.FINANCES_VIEW, P.REPORTS_VIEW], <ReportsPage />)} />}
             <Route path={`${ROLE_HOME[role]}/properties/:propertyId`} element={<PropertyDetailPage />} />
-            <Route path={`${ROLE_HOME[role]}/residents`} element={guard([P.RESIDENTS_VIEW], <ResidentsPage />)} />
-            <Route path={`${ROLE_HOME[role]}/residents/:residentId`} element={guard([P.RESIDENTS_VIEW], <ResidentDetailPage />)} />
+            {role !== 'maintenance' && <Route path={`${ROLE_HOME[role]}/residents`} element={guard([P.RESIDENTS_VIEW], <ResidentsPage />)} />}
+            {role !== 'maintenance' && <Route path={`${ROLE_HOME[role]}/residents/:residentId`} element={guard([P.RESIDENTS_VIEW], <ResidentDetailPage />)} />}
             <Route path={`${ROLE_HOME[role]}/complaints`} element={<ComplaintsPage />} />
             <Route path={`${ROLE_HOME[role]}/notifications`} element={<NotificationsPage />} />
             {role !== 'maintenance' && <Route path={`${ROLE_HOME[role]}/rent`} element={guard([P.PAYMENTS_VIEW], <RentPage />)} />}
@@ -80,6 +82,7 @@ export default function App() {
 
       <Route path="*" element={<ComingSoon title="Not found" />} />
     </Routes>
+    </Suspense>
     </>
   );
 }

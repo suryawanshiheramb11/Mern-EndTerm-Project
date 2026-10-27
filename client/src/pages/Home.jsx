@@ -6,7 +6,7 @@ import Landing from './Landing.jsx';
 // "/" is the public landing page; signed-in people go straight to their own home.
 export default function Home() {
   const { user, loading } = useAuth();
-  if (loading) return <div className="min-h-screen bg-slate-50" aria-busy="true" />;
-  if (user) return <Navigate to={homeFor(user)} replace />;
+  // Show the landing page straight away; a signed-in person is redirected once the session check lands.
+  if (!loading && user) return <Navigate to={homeFor(user)} replace />;
   return <Landing />;
 }

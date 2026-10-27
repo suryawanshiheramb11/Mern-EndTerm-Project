@@ -156,9 +156,7 @@ describe('student credentials, email and details', () => {
     const fetched = (await ctx.owner.get(`/api/residents/${ctx.resident.id}`)).body.data.resident;
     expect(fetched.medical).toMatchObject({ bloodGroup: 'B+', allergies: 'None known', conditions: 'Asthma' });
 
-    const seen = (await maint.get(`/api/residents/${ctx.resident.id}`)).body.data.resident;
-    expect(seen.fullName).toBeTruthy();
-    for (const k of ['guardian', 'medical', 'dateOfBirth', 'permanentAddress']) expect(seen[k], k).toBeUndefined();
+    expect((await maint.get(`/api/residents/${ctx.resident.id}`)).status).toBe(403);
 
     expect((await ctx.owner.patch(`/api/residents/${ctx.resident.id}`).send({ medical: { bloodGroup: 'Z+' } })).status).toBe(400);
     expect((await ctx.owner.patch(`/api/residents/${ctx.resident.id}`).send({ medical: { shoeSize: 9 } })).status).toBe(400);

@@ -31,7 +31,7 @@ export const PERMISSION_OPTIONS = [
 
 export const DEFAULT_PERMISSIONS = {
   warden: ['residents.view', 'residents.edit', 'payments.record', 'payments.view', 'complaints.manage'],
-  maintenance: ['complaints.manage', 'residents.view'],
+  maintenance: ['complaints.manage'],
 };
 
 const SATISFIED_BY = {

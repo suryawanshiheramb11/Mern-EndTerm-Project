@@ -45,5 +45,5 @@ export const grantSatisfies = (granted, required) =>
 
 export const DEFAULT_PERMISSIONS = Object.freeze({
   warden: Object.freeze(['residents.view', 'residents.edit', 'payments.record', 'payments.view', 'complaints.manage']),
-  maintenance: Object.freeze(['complaints.manage', 'residents.view']),
+  maintenance: Object.freeze(['complaints.manage']),
 });

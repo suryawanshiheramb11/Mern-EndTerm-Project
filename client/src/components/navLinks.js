@@ -14,7 +14,7 @@ export const buildNavLinks = (user, pathname) => {
     icon: 'building',
     active: isOwner ? starts(`${home}/properties`) : pathname === home || starts(`${home}/properties`),
   });
-  if (hasAnyPermission(user, P.RESIDENTS_VIEW)) links.push({ to: `${home}/residents`, label: 'Residents', icon: 'users', active: starts(`${home}/residents`) });
+  if (user.role !== 'maintenance' && hasAnyPermission(user, P.RESIDENTS_VIEW)) links.push({ to: `${home}/residents`, label: 'Residents', icon: 'users', active: starts(`${home}/residents`) });
   // Maintenance staff have no access to finances.
   if ((isOwner || user.role === 'warden') && hasAnyPermission(user, P.PAYMENTS_VIEW)) {
     links.push({ to: `${home}/rent`, label: 'Rent', icon: 'rent', active: starts(`${home}/rent`) });

@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as authApi from '../services/auth.js';
 
@@ -16,6 +17,7 @@ const fetchMe = async () => {
 
 export function AuthProvider({ children }) {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const { data: user = null, isLoading, refetch } = useQuery({
     queryKey: ME_KEY,
     queryFn: fetchMe,
@@ -45,10 +47,12 @@ export function AuthProvider({ children }) {
     try {
       await authApi.logout();
     } finally {
+      // Leave for the landing page before the session clears, so route guards don't bounce to /login.
+      navigate('/', { replace: true });
       queryClient.clear();
       queryClient.setQueryData(ME_KEY, null);
     }
-  }, [queryClient]);
+  }, [queryClient, navigate]);
 
   // For sign-in methods that finish elsewhere (Google, emailed code, password change).
   const setUser = useCallback((next) => queryClient.setQueryData(ME_KEY, next), [queryClient]);
