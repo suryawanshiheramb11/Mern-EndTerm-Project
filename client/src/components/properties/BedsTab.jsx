@@ -1,11 +1,14 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import ErrorBanner from '../ErrorBanner.jsx';
 import AddBedsModal from './AddBedsModal.jsx';
 import BedEditModal from './BedEditModal.jsx';
+import AssignToBedModal from './AssignToBedModal.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { BED_STATUS } from '../../lib/bedStatus.js';
 import { canWrite, PERMISSIONS } from '../../lib/permissions.js';
+import { ROLE_HOME } from '../../lib/roles.js';
 import { listBeds, listRooms } from '../../services/properties.js';
 import { listStays } from '../../services/residents.js';
 
@@ -14,10 +17,13 @@ const LIVE_REFRESH_MS = 30_000;
 
 export default function BedsTab({ propertyId }) {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const mayStay = canWrite(user, propertyId, PERMISSIONS.STAYS_WRITE);
   const editable = canWrite(user, propertyId, PERMISSIONS.BEDS_WRITE);
   const [filters, setFilters] = useState({ status: '' });
   const [adding, setAdding] = useState(null);
   const [editing, setEditing] = useState(null);
+  const [assigning, setAssigning] = useState(null);
 
   const rooms = useQuery({ queryKey: ['rooms', propertyId], queryFn: () => listRooms(propertyId) });
   const beds = useQuery({ queryKey: ['beds', propertyId, filters], queryFn: () => listBeds(propertyId, filters), refetchInterval: LIVE_REFRESH_MS });
@@ -28,7 +34,11 @@ export default function BedsTab({ propertyId }) {
     enabled: user.role !== 'maintenance',
     refetchInterval: LIVE_REFRESH_MS,
   });
-  const occupant = new Map((stays.data?.items ?? []).map((s) => [s.bed.id, s.resident.fullName]));
+  const activeStays = stays.data?.items ?? [];
+  const occupant = new Map(activeStays.map((s) => [s.bed.id, s.resident.fullName]));
+  const occupantId = new Map(activeStays.map((s) => [s.bed.id, s.resident.id]));
+  const takenResidentIds = new Set(activeStays.map((s) => s.resident.id));
+  const residentsPath = `${ROLE_HOME[user.role]}/residents`;
 
   if (rooms.isLoading || beds.isLoading) return <p className="text-slate-500">Loading beds…</p>;
   const error = rooms.error ?? beds.error;
@@ -91,15 +101,28 @@ export default function BedsTab({ propertyId }) {
                   {roomBeds.map((bed) => {
                     const s = BED_STATUS[bed.status];
                     const className = `flex h-12 w-12 flex-col items-center justify-center rounded-md border text-sm font-semibold ${s.chip}`;
-                    return editable ? (
-                      <button key={bed.id} type="button" title={`${bed.label} · ${s.label}${occupant.has(bed.id) ? ` · ${occupant.get(bed.id)}` : ''}`} onClick={() => setEditing({ room, bed })} className={`${className} hover:ring-2 hover:ring-slate-400`}>
+                    const title = `${bed.label} · ${s.label}${occupant.has(bed.id) ? ` · ${occupant.get(bed.id)}` : ''}`;
+                    const chip = (
+                      <>
                         {bed.label}
                         <span className="text-[9px] font-normal">{s.label.slice(0, 5)}</span>
+                      </>
+                    );
+                    // Wardens assign free beds and jump to an occupant (rent, payments) from here; bed settings stay with settings.edit.
+                    const onClick = editable
+                      ? () => setEditing({ room, bed })
+                      : mayStay && bed.status === 'available'
+                        ? () => setAssigning({ room, bed })
+                        : mayStay && occupantId.has(bed.id)
+                          ? () => navigate(`${residentsPath}/${occupantId.get(bed.id)}`)
+                          : null;
+                    return onClick ? (
+                      <button key={bed.id} type="button" title={editable ? title : bed.status === 'available' ? `${title} · click to assign` : `${title} · click to open resident`} onClick={onClick} className={`${className} hover:ring-2 hover:ring-slate-400`}>
+                        {chip}
                       </button>
                     ) : (
-                      <div key={bed.id} title={`${bed.label} · ${s.label}${occupant.has(bed.id) ? ` · ${occupant.get(bed.id)}` : ''}`} className={className}>
-                        {bed.label}
-                        <span className="text-[9px] font-normal">{s.label.slice(0, 5)}</span>
+                      <div key={bed.id} title={title} className={className}>
+                        {chip}
                       </div>
                     );
                   })}
@@ -117,6 +140,16 @@ export default function BedsTab({ propertyId }) {
       )}
 
       {adding && <AddBedsModal propertyId={propertyId} rooms={rooms.data.items} initialRoomId={adding.roomId} onClose={() => setAdding(null)} />}
+      {assigning && (
+        <AssignToBedModal
+          propertyId={propertyId}
+          room={assigning.room}
+          bed={assigning.bed}
+          takenResidentIds={takenResidentIds}
+          onClose={() => setAssigning(null)}
+          onAssigned={(_result, resident) => navigate(`${residentsPath}/${resident.id}`)}
+        />
+      )}
       {editing && <BedEditModal propertyId={propertyId} room={editing.room} bed={editing.bed} onClose={() => setEditing(null)} />}
     </div>
   );

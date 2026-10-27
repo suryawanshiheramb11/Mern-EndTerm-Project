@@ -13,7 +13,7 @@ const ACTIONS = [
   { value: 'reserve', label: 'Reserve for a future date' },
 ];
 
-export default function AssignBedModal({ resident, onClose, onInvite }) {
+export default function AssignBedModal({ resident, initialBedId, onClose, onInvite, onAssigned }) {
   const queryClient = useQueryClient();
   const propertyId = resident.property;
   const rooms = useQuery({ queryKey: ['rooms', propertyId], queryFn: () => listRooms(propertyId) });
@@ -36,7 +36,7 @@ export default function AssignBedModal({ resident, onClose, onInvite }) {
   const options = (beds.data?.items ?? [])
     .filter((b) => roomById.get(b.room)?.status === 'active')
     .map((b) => ({ value: b.id, label: `Room ${roomById.get(b.room).number} · Bed ${b.label}` }));
-  const bedId = f.bedId || options[0]?.value || '';
+  const bedId = f.bedId || (options.some((o) => o.value === initialBedId) ? initialBedId : '') || options[0]?.value || '';
   const bed = beds.data?.items.find((b) => b.id === bedId);
   const defaultRent = bed ? (bed.monthlyRent ?? roomById.get(bed.room)?.defaultMonthlyRent) : undefined;
 
@@ -61,6 +61,7 @@ export default function AssignBedModal({ resident, onClose, onInvite }) {
     );
     await Promise.all(['beds', 'property'].map((key) => queryClient.invalidateQueries({ queryKey: [key, propertyId] })));
     if (result.invite || result.inviteError) onInvite?.(result);
+    onAssigned?.(result, resident);
   };
 
   return (
