@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom';
+import ThemeToggle from '../components/ThemeToggle.jsx';
 import Icon from '../components/Icon.jsx';
 import NotificationBell from '../components/notifications/NotificationBell.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -28,6 +29,7 @@ export default function StudentShell() {
             ))}
           </nav>
           <div className="flex items-center gap-1 text-sm">
+            <ThemeToggle />
             <NotificationBell to="/student/notifications" />
             <span className="hidden font-medium text-slate-800 lg:inline">{user.name}</span>
             <button type="button" onClick={logout} className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium text-slate-600 hover:bg-slate-100">

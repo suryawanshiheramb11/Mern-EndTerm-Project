@@ -44,7 +44,7 @@ export default function StudentRent() {
         currency: order.currency,
         name: 'StayOS',
         description: order.description,
-        theme: { color: '#0f766e' },
+        theme: { color: '#0a66d6' },
         handler: async (response) => {
           try {
             await verifyRazorpayPayment(response);

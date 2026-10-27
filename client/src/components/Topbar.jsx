@@ -1,5 +1,6 @@
 import { useAuth } from '../context/AuthContext.jsx';
 import { ROLE_HOME } from '../lib/roles.js';
+import ThemeToggle from './ThemeToggle.jsx';
 import Icon from './Icon.jsx';
 import MobileNav from './MobileNav.jsx';
 import NotificationBell from './notifications/NotificationBell.jsx';
@@ -10,6 +11,7 @@ export default function Topbar() {
     <header className="glass sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-slate-200 px-4 md:px-8">
       <MobileNav />
       <div className="ml-auto flex items-center gap-2 text-sm">
+        <ThemeToggle />
         <NotificationBell to={`${ROLE_HOME[user.role]}/notifications`} />
         <div className="hidden items-center gap-2 pl-2 sm:flex">
           <span className="font-medium text-slate-800">{user.name}</span>

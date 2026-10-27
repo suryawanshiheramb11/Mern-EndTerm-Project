@@ -4,9 +4,9 @@
 
 /*
   StayOS design tokens. Colours are space-separated RGB so Tailwind can apply opacity.
-  Light and dark follow the system setting; there is no in-app appearance switch.
-  Contrast (WCAG, text on its surface): label 16.8:1, secondary 6.0:1, accent 5.5:1, signals 4.8-6.3:1 in light;
-  label 15.6:1, secondary 6.6:1, accent 9.6:1, signals 6.4-10.6:1 in dark.
+  Light and dark follow the system setting until the person picks one with the theme toggle.
+  Contrast (WCAG, text on its surface): label 16.8:1, secondary 6.0:1, accent 5.4:1, signals 4.8-6.3:1 in light;
+  label 15.6:1, secondary 6.6:1, accent 9.4:1, signals 6.4-10.6:1 in dark.
 */
 :root {
   color-scheme: light dark;
@@ -23,10 +23,10 @@
   --slate-800: 29 29 31; /* primary text */
   --slate-900: 17 17 19;
 
-  --accent: 15 118 110;
-  --accent-hover: 11 94 88;
-  --accent-ink: 15 118 110; /* accent used as text/links */
-  --accent-tint: 224 244 241;
+  --accent: 10 102 214;
+  --accent-hover: 8 80 178;
+  --accent-ink: 10 102 214; /* accent used as text/links */
+  --accent-tint: 227 239 253;
   --danger: 196 40 28;
 
   --red-50: 253 236 234; --red-300: 240 160 154; --red-600: 196 40 28; --red-700: 179 38 30;
@@ -35,11 +35,12 @@
   --green-50: 230 244 234; --green-700: 27 122 58; --green-800: 21 100 47; --green-900: 16 80 38;
   --emerald-50: 230 244 234; --emerald-300: 150 210 175; --emerald-500: 40 160 90; --emerald-700: 27 122 58; --emerald-800: 21 100 47;
   --blue-50: 232 241 251; --blue-200: 175 205 240; --blue-700: 11 92 173; --blue-900: 8 60 120;
-  --indigo-50: 224 244 241; --indigo-700: 15 118 110; /* name kept for the 'assigned' badge; teal, not purple */
+  --indigo-50: 227 239 253; --indigo-700: 10 102 214; /* name kept for the 'assigned' badge; blue, not purple */
 }
 
+/* Dark appearance: follows the system until a person picks one with the toggle (data-theme on <html>). */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     --surface: 28 28 30;
     --slate-50: 18 18 20;
     --slate-100: 44 44 46;
@@ -52,10 +53,10 @@
     --slate-800: 245 245 247;
     --slate-900: 255 255 255;
 
-    --accent: 15 118 110;
-    --accent-hover: 19 138 128;
-    --accent-ink: 94 214 196;
-    --accent-tint: 20 52 49;
+    --accent: 10 102 214;
+    --accent-hover: 30 124 235;
+    --accent-ink: 110 180 255;
+    --accent-tint: 14 38 71;
     --danger: 217 58 47;
 
     --red-50: 58 21 18; --red-300: 120 50 45; --red-600: 255 138 128; --red-700: 255 138 128;
@@ -64,9 +65,38 @@
     --green-50: 16 48 27; --green-700: 76 210 122; --green-800: 100 220 140; --green-900: 130 230 165;
     --emerald-50: 16 48 27; --emerald-300: 40 100 65; --emerald-500: 76 210 122; --emerald-700: 76 210 122; --emerald-800: 100 220 140;
     --blue-50: 15 42 71; --blue-200: 40 80 130; --blue-700: 100 176 255; --blue-900: 150 200 255;
-    --indigo-50: 20 52 49; --indigo-700: 94 214 196;
+    --indigo-50: 14 38 71; --indigo-700: 110 180 255;
   }
 }
+:root[data-theme='dark'] {
+  color-scheme: dark;
+    --surface: 28 28 30;
+    --slate-50: 18 18 20;
+    --slate-100: 44 44 46;
+    --slate-200: 56 56 58;
+    --slate-300: 84 84 88;
+    --slate-400: 142 142 147;
+    --slate-500: 161 161 166;
+    --slate-600: 199 199 204;
+    --slate-700: 216 216 220;
+    --slate-800: 245 245 247;
+    --slate-900: 255 255 255;
+
+    --accent: 10 102 214;
+    --accent-hover: 30 124 235;
+    --accent-ink: 110 180 255;
+    --accent-tint: 14 38 71;
+    --danger: 217 58 47;
+
+    --red-50: 58 21 18; --red-300: 120 50 45; --red-600: 255 138 128; --red-700: 255 138 128;
+    --amber-50: 58 42 8; --amber-200: 110 80 20; --amber-300: 140 100 20; --amber-500: 255 194 90; --amber-800: 255 194 90; --amber-900: 255 210 130;
+    --orange-50: 58 30 10; --orange-300: 140 80 30; --orange-500: 255 170 100; --orange-800: 255 170 100;
+    --green-50: 16 48 27; --green-700: 76 210 122; --green-800: 100 220 140; --green-900: 130 230 165;
+    --emerald-50: 16 48 27; --emerald-300: 40 100 65; --emerald-500: 76 210 122; --emerald-700: 76 210 122; --emerald-800: 100 220 140;
+    --blue-50: 15 42 71; --blue-200: 40 80 130; --blue-700: 100 176 255; --blue-900: 150 200 255;
+    --indigo-50: 14 38 71; --indigo-700: 110 180 255;
+}
+:root[data-theme='light'] { color-scheme: light; }
 
 @layer base {
   html { -webkit-text-size-adjust: 100%; }
@@ -132,4 +162,13 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .rise { animation: none !important; }
+}
+
+/* Scroll reveal: content eases in once as it enters the viewport. */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 650ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 650ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+.reveal.is-visible { opacity: 1; transform: none; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
 }
