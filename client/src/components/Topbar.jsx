@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { ROLE_HOME } from '../lib/roles.js';
 import ThemeToggle from './ThemeToggle.jsx';
@@ -17,6 +18,7 @@ export default function Topbar() {
           <span className="font-medium text-slate-800">{user.name}</span>
           <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium capitalize text-slate-600">{user.role}</span>
         </div>
+        <Link to="/change-password" className="hidden rounded-lg px-3 py-1.5 font-medium text-slate-600 hover:bg-slate-100 md:inline">Password</Link>
         <button type="button" onClick={logout} className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium text-slate-600 hover:bg-slate-100">
           <Icon name="logout" size={18} />
           <span className="hidden sm:inline">Log out</span>

@@ -6,7 +6,7 @@ import RefundsTable from '../../components/refunds/RefundsTable.jsx';
 import ReceiptModal from '../../components/rent/ReceiptModal.jsx';
 import { ChargesTable, PaymentsTable } from '../../components/rent/RentTables.jsx';
 import { formatPaise, toPaise } from '../../lib/format.js';
-import { createRazorpayOrder, listMyCharges, listMyPayments, listMyRefunds, verifyRazorpayPayment } from '../../services/me.js';
+import { createRazorpayOrder, getProfile, listMyCharges, listMyPayments, listMyRefunds, verifyRazorpayPayment } from '../../services/me.js';
 
 const loadCheckout = () =>
   new Promise((resolve, reject) => {
@@ -26,17 +26,21 @@ export default function StudentRent() {
   const [payCharge, setPayCharge] = useState(null);
   const [amount, setAmount] = useState('');
   const qc = useQueryClient();
+  const profile = useQuery({ queryKey: ['me', 'profile'], queryFn: getProfile });
   const charges = useQuery({ queryKey: ['me', 'charges'], queryFn: listMyCharges });
   const payments = useQuery({ queryKey: ['me', 'payments'], queryFn: listMyPayments });
   const refunds = useQuery({ queryKey: ['me', 'refunds'], queryFn: listMyRefunds });
 
   const refresh = () => qc.invalidateQueries({ queryKey: ['me'] });
 
-  const payOnline = async (charge, amountPaise) => {
+  // method: 'upi' puts UPI first (QR or app on desktop, intent on phones); 'other' leads with cards and netbanking.
+  const payOnline = async (charge, amountPaise, method) => {
     setPayError(null);
     setPaying(true);
     try {
       const [order] = await Promise.all([createRazorpayOrder(charge.id, amountPaise), loadCheckout()]);
+      const upiBlock = { name: 'Pay using UPI', instruments: [{ method: 'upi' }] };
+      const otherBlock = { name: 'Cards, netbanking and wallets', instruments: [{ method: 'card' }, { method: 'netbanking' }, { method: 'wallet' }] };
       const checkout = new window.Razorpay({
         key: order.keyId,
         order_id: order.orderId,
@@ -45,6 +49,17 @@ export default function StudentRent() {
         name: 'StayOS',
         description: order.description,
         theme: { color: '#0a66d6' },
+        prefill: { name: profile.data?.user?.name, email: profile.data?.user?.email, contact: profile.data?.resident?.phone },
+        method: { upi: true, card: true, netbanking: true, wallet: true, emi: false, paylater: false },
+        config: {
+          display: {
+            blocks: { upi: upiBlock, other: otherBlock },
+            sequence: method === 'upi' ? ['block.upi', 'block.other'] : ['block.other', 'block.upi'],
+            preferences: { show_default_blocks: false },
+          },
+        },
+        retry: { enabled: true, max_count: 3 },
+        modal: { confirm_close: true, ondismiss: () => setPaying(false) },
         handler: async (response) => {
           try {
             await verifyRazorpayPayment(response);
@@ -54,8 +69,8 @@ export default function StudentRent() {
           refresh();
           setPaying(false);
         },
-        modal: { ondismiss: () => setPaying(false) },
       });
+      checkout.on('payment.failed', (r) => setPayError(new Error(r.error?.description || 'The payment did not go through. You have not been charged, or the bank will refund it.')));
       checkout.open();
     } catch (err) {
       setPayError(err);
@@ -85,21 +100,28 @@ export default function StudentRent() {
       )}
       {payCharge && (
         <Modal title="Pay rent online" onClose={() => setPayCharge(null)}>
-          <form
-            className="space-y-3"
-            onSubmit={(e) => {
-              e.preventDefault();
-              const charge = payCharge;
-              setPayCharge(null);
-              payOnline(charge, toPaise(amount));
-            }}
-          >
-            <p className="text-sm text-slate-600">Outstanding (including any late fee): <strong>{formatPaise(payCharge.outstandingPaise)}</strong>. You can pay all of it or a part now and the rest later.</p>
+          <form className="space-y-3" onSubmit={(e) => e.preventDefault()}>
+            <p className="text-sm text-slate-600">Outstanding (including any late fee): <strong>{formatPaise(payCharge.outstandingPaise)}</strong>. Pay all of it or part now and the rest later.</p>
             <label className="block text-sm font-medium text-slate-700">
               Amount (₹)
               <input type="number" inputMode="decimal" min="1" max={payCharge.outstandingPaise / 100} step="0.01" required value={amount} onChange={(e) => setAmount(e.target.value)} className="mt-1 w-full border border-slate-300 px-3" />
             </label>
-            <button type="submit" className="w-full rounded-lg bg-accent px-4 py-2 font-medium text-onaccent hover:bg-accent-hover">Continue to payment</button>
+            {['upi', 'other'].map((m) => (
+              <button
+                key={m}
+                type="submit"
+                onClick={(e) => {
+                  if (!e.currentTarget.form.reportValidity()) return;
+                  const charge = payCharge;
+                  setPayCharge(null);
+                  payOnline(charge, toPaise(amount), m);
+                }}
+                className={m === 'upi' ? 'w-full rounded-lg bg-accent px-4 py-2.5 font-semibold text-onaccent hover:bg-accent-hover' : 'w-full rounded-lg border border-slate-300 px-4 py-2.5 font-semibold text-slate-800 hover:bg-slate-100'}
+              >
+                {m === 'upi' ? 'Pay with UPI' : 'Cards, netbanking or wallet'}
+              </button>
+            ))}
+            <p className="text-center text-xs text-slate-500">Secured by Razorpay. UPI works with any UPI app.</p>
           </form>
         </Modal>
       )}

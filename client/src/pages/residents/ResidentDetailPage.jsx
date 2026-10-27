@@ -1,15 +1,18 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import ErrorBanner from '../../components/ErrorBanner.jsx';
 import AssignBedModal from '../../components/residents/AssignBedModal.jsx';
+import AccountPanel from '../../components/residents/AccountPanel.jsx';
+import DetailsModal from '../../components/residents/DetailsModal.jsx';
+import PersonalDetailsCard from '../../components/residents/PersonalDetailsCard.jsx';
 import InvitePanel from '../../components/residents/InvitePanel.jsx';
 import TransferModal from '../../components/residents/TransferModal.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { formatDate, formatPaise } from '../../lib/format.js';
-import { canWrite, PERMISSIONS } from '../../lib/permissions.js';
+import { canWrite, hasAnyPermission, PERMISSIONS } from '../../lib/permissions.js';
 import { ROLE_HOME } from '../../lib/roles.js';
-import { getResident, listStays } from '../../services/residents.js';
+import { getResident, listStays, updateResident } from '../../services/residents.js';
 import { listCharges, listPayments } from '../../services/rent.js';
 import { listRefunds } from '../../services/refunds.js';
 import CheckoutModal from '../../components/residents/CheckoutModal.jsx';
@@ -33,10 +36,13 @@ function Row({ label, children }) {
 export default function ResidentDetailPage() {
   const { residentId } = useParams();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [modal, setModal] = useState(null);
   const [checkInInvite, setCheckInInvite] = useState(null);
   const { onAction, modal: actionModal, error: actionError, openReceipt } = useRentActions();
-  const showRent = user.role === 'owner' || user.role === 'warden'; // maintenance has no finance access
+  const isStaffWithData = user.role === 'owner' || user.role === 'warden'; // maintenance sees neither money nor health data
+  // Wardens without payments.view never fire the finance requests (they would only be refused).
+  const showRent = isStaffWithData && hasAnyPermission(user, PERMISSIONS.PAYMENTS_VIEW);
 
   const resident = useQuery({ queryKey: ['resident', residentId], queryFn: () => getResident(residentId) });
   const stays = useQuery({
@@ -85,6 +91,7 @@ export default function ResidentDetailPage() {
           <div className="mt-3 border-t border-slate-100 pt-3">
             <InvitePanel key={checkInInvite ? 'invited' : 'idle'} resident={r} canInvite={mayInvite} initial={checkInInvite?.invite} />
           </div>
+          <AccountPanel resident={r} canEdit={mayInvite && isStaffWithData} />
         </section>
 
         <section className="rounded-lg border border-slate-200 bg-white p-4">
@@ -131,6 +138,13 @@ export default function ResidentDetailPage() {
           )}
         </section>
       </div>
+
+      {isStaffWithData && (
+        <PersonalDetailsCard
+          resident={r}
+          action={mayInvite && <button type="button" onClick={() => setModal({ type: 'details' })} className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium hover:bg-slate-50">Edit</button>}
+        />
+      )}
 
       {showRent && (
         <section className="space-y-3">
@@ -200,6 +214,16 @@ export default function ResidentDetailPage() {
         </section>
       )}
 
+      {modal?.type === 'details' && (
+        <DetailsModal
+          resident={r}
+          onClose={() => setModal(null)}
+          onSave={async (patch) => {
+            await updateResident(r.id, patch);
+            await queryClient.invalidateQueries({ queryKey: ['resident', residentId] });
+          }}
+        />
+      )}
       {modal?.type === 'assign' && <AssignBedModal resident={r} onClose={() => setModal(null)} onInvite={setCheckInInvite} />}
       {modal?.type === 'pay' && (
         <RecordPaymentModal propertyId={r.property} residentId={residentId} onClose={() => setModal(null)} onRecorded={openReceipt} />

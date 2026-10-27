@@ -1,6 +1,10 @@
-import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import DetailsModal from '../../components/residents/DetailsModal.jsx';
+import PersonalDetailsCard from '../../components/residents/PersonalDetailsCard.jsx';
 import ErrorBanner from '../../components/ErrorBanner.jsx';
-import { getProfile } from '../../services/me.js';
+import { getProfile, updateMyDetails } from '../../services/me.js';
 
 function Row({ label, children }) {
   return (
@@ -12,6 +16,8 @@ function Row({ label, children }) {
 }
 
 export default function StudentProfile() {
+  const queryClient = useQueryClient();
+  const [editing, setEditing] = useState(false);
   const { data, error, isLoading } = useQuery({ queryKey: ['me', 'profile'], queryFn: getProfile });
   if (isLoading) return <p className="text-slate-500">Loading…</p>;
   if (error) return <ErrorBanner error={error} />;
@@ -37,8 +43,27 @@ export default function StudentProfile() {
             <Row label="Property">{property?.name}</Row>
             <Row label="Property contact">{property?.contact?.phone}</Row>
           </dl>
-          <p className="mt-3 text-xs text-slate-500">To change these details, ask your warden.</p>
+          <p className="mt-3 text-xs text-slate-500">To change your phone, email or room, ask your warden.</p>
         </section>
+      )}
+      {resident && (
+        <PersonalDetailsCard
+          resident={resident}
+          title="Your guardian and health details"
+          action={<button type="button" onClick={() => setEditing(true)} className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium hover:bg-slate-50">Edit</button>}
+        />
+      )}
+      <Link to="/change-password" className="inline-block rounded-md border border-slate-300 px-3 py-2 text-sm font-medium hover:bg-slate-50">Change password</Link>
+      {editing && (
+        <DetailsModal
+          self
+          resident={resident}
+          onClose={() => setEditing(false)}
+          onSave={async (patch) => {
+            await updateMyDetails(patch);
+            await queryClient.invalidateQueries({ queryKey: ['me', 'profile'] });
+          }}
+        />
       )}
     </div>
   );
