@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { signedPaiseField } from '../utils/money.js';
 
-export const PAYMENT_METHODS = ['cash', 'upi', 'bank', 'card', 'other'];
+export const PAYMENT_METHODS = ['cash', 'upi', 'bank', 'card', 'razorpay', 'other'];
 export const PAYMENT_STATUSES = ['recorded', 'verified', 'reversed'];
 
 const ref = (model, extra = {}) => ({ type: mongoose.Schema.Types.ObjectId, ref: model, ...extra });
@@ -21,7 +21,7 @@ const allocationSchema = new mongoose.Schema(
  * new payment. Only the lifecycle fields (status, verifiedBy/At, reversedBy/At) ever change.
  *
  * Invariant: sum(allocations) + advancePaise === amountPaise. 'verified' is only ever set by
- * paymentService.verifyPayment (owner action); there is no gateway.
+ * paymentService.verifyPayment (owner action); online (Razorpay) payments are recorded as 'verified' only after signature check.
  */
 const paymentSchema = new mongoose.Schema(
   {

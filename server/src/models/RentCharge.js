@@ -10,7 +10,7 @@ const adjustmentSchema = new mongoose.Schema(
   {
     amountPaise: { ...signedPaiseField(), required: true },
     reason: { type: String, required: true, trim: true, minlength: 1, maxlength: 300 },
-    kind: { type: String, enum: ['adjustment', 'waiver'], default: 'adjustment' },
+    kind: { type: String, enum: ['adjustment', 'waiver', 'late_fee'], default: 'adjustment' },
     createdBy: ref('User'),
     createdAt: { type: Date, default: Date.now },
   },

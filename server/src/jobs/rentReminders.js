@@ -19,5 +19,16 @@ export const runRentReminders = async ({ propertyIds, today = businessToday() } 
     totals.created += r.created;
     totals.skipped += r.skipped;
   }
+
+  // Overdue and still unpaid: remind weekly (the first overdue notice is sent by reconcile).
+  const overdue = { ...OWES, status: 'overdue', ...(propertyIds && { property: { $in: propertyIds } }) };
+  for await (const charge of RentCharge.find(overdue).lean().cursor()) {
+    const week = Math.floor((today - charge.dueDate) / (7 * 86400000));
+    if (week < 1) continue;
+    const r = await notify('rent_overdue_reminder', { charge, week });
+    totals.scanned += 1;
+    totals.created += r.created;
+    totals.skipped += r.skipped;
+  }
   return totals;
 };

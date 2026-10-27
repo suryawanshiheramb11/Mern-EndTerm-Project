@@ -48,6 +48,14 @@ const EVENTS = {
       title: 'Rent overdue', body: `Rent for ${charge.periodKey} was due on ${date(charge.dueDate)} and is overdue.`,
     }];
   },
+  // Weekly nudge while rent stays unpaid; `week` is part of the key so each week sends once.
+  async rent_overdue_reminder({ charge, week }) {
+    return [{
+      type: 'rent_overdue', property: charge.property, to: await residentUsers(charge.resident), route: () => '/student/rent',
+      key: `rent_overdue_reminder:${id(charge)}:${week}`,
+      title: 'Rent still unpaid', body: `Rent for ${charge.periodKey} (${inr(Math.max(charge.netDuePaise - charge.paidPaise, 0))} outstanding, including any late fee) was due on ${date(charge.dueDate)}. Please pay it in the Rent section.`,
+    }];
+  },
   async payment_recorded({ payment }) {
     return [{
       type: 'payment_recorded', property: payment.property, to: await residentUsers(payment.resident), route: () => '/student/rent', key: `payment_recorded:${id(payment)}`,

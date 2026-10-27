@@ -6,6 +6,7 @@ import * as complaints from '../services/complaint.service.js';
 import * as me from '../services/me.service.js';
 import * as notifications from '../services/notification.service.js';
 import * as payments from '../services/payment.service.js';
+import * as razorpay from '../services/razorpay.service.js';
 import * as refunds from '../services/refund.service.js';
 
 export const summary = asyncHandler(async (req, res) => {
@@ -56,4 +57,13 @@ export const listNotifications = asyncHandler(async (req, res) => {
 
 export const markNotificationRead = asyncHandler(async (req, res) => {
   ApiResponse.send(res, { notification: serializeNotification(await notifications.markRead(req.user, req.params.id)) }, 'Marked as read');
+});
+
+export const razorpayOrder = asyncHandler(async (req, res) => {
+  ApiResponse.created(res, { order: await razorpay.createOrder(req.user, req.body) }, 'Order created');
+});
+
+export const razorpayVerify = asyncHandler(async (req, res) => {
+  const { payment, replayed } = await razorpay.verifyAndRecord(req.user, req.body);
+  ApiResponse.send(res, { payment: serializePayment(payment), replayed }, replayed ? 'Payment already recorded' : 'Payment recorded');
 });

@@ -55,6 +55,9 @@ export const env = Object.freeze({
   EMAIL_ENABLED: process.env.EMAIL_ENABLED !== 'false',
   EMAIL_FROM: process.env.EMAIL_FROM ?? 'StayOS <no-reply@stayos.local>',
   SMTP_URL: process.env.SMTP_URL,
+  // Razorpay (test or live keys). Without both, online payment endpoints answer 503.
+  RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID,
+  RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET,
   ENABLE_CRON: process.env.ENABLE_CRON === 'true',
   isProd: process.env.NODE_ENV === 'production',
   isDev: (process.env.NODE_ENV ?? 'development') === 'development',

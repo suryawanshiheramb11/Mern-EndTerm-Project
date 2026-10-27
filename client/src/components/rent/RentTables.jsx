@@ -4,7 +4,7 @@ import StatusPill from './StatusPill.jsx';
 const th = 'px-4 py-2';
 const btn = 'rounded border border-slate-300 px-2 py-1 text-xs font-medium hover:bg-slate-50';
 
-export function ChargesTable({ items, showResident = true, isOwner, onAction }) {
+export function ChargesTable({ items, showResident = true, isOwner, onAction, canPay = false }) {
   if (items.length === 0) return <p className="text-sm text-slate-500">No rent charges.</p>;
   return (
     <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
@@ -18,7 +18,7 @@ export function ChargesTable({ items, showResident = true, isOwner, onAction }) 
             <th className={`${th} text-right`}>Paid</th>
             <th className={`${th} text-right`}>Outstanding</th>
             <th className={th}>Status</th>
-            {isOwner && <th className={th} />}
+            {(isOwner || canPay) && <th className={th} />}
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
@@ -33,6 +33,13 @@ export function ChargesTable({ items, showResident = true, isOwner, onAction }) 
               <td className="px-4 py-2">
                 <StatusPill status={c.status} />
               </td>
+              {canPay && (
+                <td className="whitespace-nowrap px-4 py-2 text-right">
+                  {c.status !== 'waived' && c.outstandingPaise > 0 && (
+                    <button type="button" className={btn} onClick={() => onAction({ type: 'pay', charge: c })}>Pay online</button>
+                  )}
+                </td>
+              )}
               {isOwner && (
                 <td className="space-x-1 whitespace-nowrap px-4 py-2 text-right">
                   {c.status !== 'waived' && (

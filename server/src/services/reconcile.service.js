@@ -13,7 +13,7 @@ const OWES = { $expr: { $gt: ['$netDuePaise', '$paidPaise'] } };
  */
 export const reconcileOverdue = async (propertyId = null, today = businessToday(), { residentId } = {}) => {
   const properties = await Property.find(propertyId ? { _id: propertyId } : {}, { settings: 1 }).lean();
-  const totals = { markedOverdue: 0, reopened: 0 };
+  const totals = { markedOverdue: 0, reopened: 0, lateFees: 0 };
 
   for (const property of properties) {
     // dueDate + grace < today  <=>  dueDate < today - grace
@@ -31,6 +31,25 @@ export const reconcileOverdue = async (propertyId = null, today = businessToday(
       { ...scope, ...OWES, status: 'overdue', dueDate: { $gte: cutoff }, paidPaise: 0 },
       { $set: { status: 'pending' } },
     );
+
+    // Late fee: a one-time percentage of the amount due, added the first time a charge is seen
+    // overdue. The `kind: 'late_fee'` guard makes this idempotent (reopen + re-flip adds nothing).
+    const basisPoints = Math.round((property.settings?.lateFeePercent ?? 0) * 100);
+    if (basisPoints > 0) {
+      const candidates = await RentCharge.find({ ...scope, ...OWES, status: 'overdue', 'adjustments.kind': { $ne: 'late_fee' } }, { netDuePaise: 1 }).lean();
+      for (const c of candidates) {
+        const fee = Math.floor((c.netDuePaise * basisPoints) / 10000);
+        if (fee < 1) continue;
+        await RentCharge.updateOne(
+          { _id: c._id, status: 'overdue', 'adjustments.kind': { $ne: 'late_fee' } },
+          {
+            $inc: { netDuePaise: fee },
+            $push: { adjustments: { amountPaise: fee, reason: `Late fee (${basisPoints / 100}%)`, kind: 'late_fee', createdAt: new Date() } },
+          },
+        );
+        totals.lateFees += 1;
+      }
+    }
 
     // Exactly one notification per charge (deduped), only for charges this run actually flipped.
     for await (const charge of RentCharge.find({ _id: { $in: flipIds }, status: 'overdue' }).lean().cursor()) {

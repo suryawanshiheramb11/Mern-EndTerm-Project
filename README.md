@@ -141,6 +141,7 @@ Endpoints under `/api/auth`: `register`, `login`, `logout`, `refresh`, `me`, `fo
 | `EMAIL_ENABLED` | no | `true` | Set `false` to skip email entirely (in-app notifications still work) |
 | `EMAIL_FROM` | no | `StayOS <no-reply@stayos.local>` | Sender address |
 | `SMTP_URL` | no | — | e.g. `smtps://user:password@smtp.example.com:465`. Empty = emails are rendered as JSON and logged, never sent |
+| `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` | no | – | Razorpay API keys (test or live). Without both, online payment endpoints answer 503. Never commit them; set in `server/.env` and the Vercel project |
 | `ENABLE_CRON` | no | `false` | Run the daily jobs inside the API process (see Notifications and jobs) |
 
 ### client/.env
@@ -196,6 +197,12 @@ Defaults on invite: wardens get `residents.view, residents.edit, payments.record
 ## Student portal
 
 Students sign in with the account created by a resident invite and get `/student`: dashboard (room and bed, next rent due, outstanding, deposit held, latest notice), rent history with printable receipts, complaints, notifications and profile. The API is `/api/me/{summary,stay,charges,payments,receipts/:paymentId,refunds,complaints,notifications,profile}`. Everything is scoped by `Resident.userId`, never by an id the student supplies, and keeps working after check-out so history and the refund stay visible.
+
+## Online payment, late fees and reminders
+
+- **Pay online (Razorpay Standard Checkout).** On *Rent history* a student taps **Pay online** on a charge, chooses an amount (all of it or part, minimum ₹1, never more than outstanding) and pays in the Razorpay window. `POST /api/me/payments/razorpay/order` creates the order (the server fixes the charge and caps the amount); `POST /api/me/payments/razorpay/verify` checks the HMAC signature, re-reads the order from Razorpay, and records a `razorpay` payment through the normal payment service (receipt number, audit entry, notification, idempotent on the Razorpay payment id, so a retry never double-records). Only the REST API is used (no SDK). A Razorpay webhook (for browsers closed mid-payment) is not implemented yet.
+- **Late fees.** Set *late fee %* in the property settings. The first time a charge is found overdue (past due date + grace) a one-time `late_fee` adjustment of that percentage of the amount due is added; it is idempotent and counts in outstanding. Turning the setting on also applies it to charges that are already overdue. Owners can still waive a charge.
+- **Reminders.** `rent_due_soon` 3 days before the due date; `rent_overdue` once when it turns overdue; then a weekly "Rent still unpaid" nudge to the student until it is cleared (all deduped).
 
 ## Notifications and jobs
 
@@ -318,7 +325,7 @@ The client follows Apple's Human Interface Guidelines principles (via the `apple
 
 ## Known limitations and next steps
 
-- **No payment gateway.** Payments are recorded by staff and verified by an owner; there is no online collection, settlement or reconciliation. A gateway would add a `verified` source and webhook handling in the payment service.
+- **Razorpay is checkout-only.** Online payments are recorded after server-side signature verification; there is no webhook, settlement report or refund-to-source. Cash/UPI/bank payments are still recorded by staff and verified by an owner.
 - **No WhatsApp/SMS.** Notifications are in-app plus email (JSON-logged until SMTP is configured).
 - **Single owner per property, one property per staff account.** An email can belong to one account, so a person cannot yet be staff at several properties; there is no multi-property consolidated view (reports are per property).
 - **Advances are recorded but not applied** to later charges; deposits are tracked on the stay and refund, not as a ledger of receipts.
