@@ -27,6 +27,13 @@ const userSchema = new mongoose.Schema(
     passwordResetToken: { type: String, select: false },
     passwordResetExpires: { type: Date },
     lastLoginAt: { type: Date },
+    // Set when an owner hands out a temporary password: every other API call is refused until it is changed.
+    mustChangePassword: { type: Boolean, default: false },
+    // Tokens issued before this moment are rejected (password or email changed).
+    passwordChangedAt: { type: Date },
+    // Brute-force defence on top of the per-IP limiter: lock the account after repeated failures.
+    failedLoginCount: { type: Number, default: 0, select: false },
+    lockedUntil: { type: Date, select: false },
     // Populated from Phase 2 onward: grants staff (warden/maintenance) access to specific
     // properties. Owners are scoped by Property.owner instead and leave this empty.
     propertyAccess: {
@@ -73,6 +80,7 @@ userSchema.methods.toSafeJSON = function toSafeJSON() {
     role: this.role,
     status: this.status,
     emailVerified: this.emailVerified,
+    mustChangePassword: this.mustChangePassword === true,
     lastLoginAt: this.lastLoginAt,
     propertyAccess: this.propertyAccess.map((a) => ({
       property: a.property.toString(),

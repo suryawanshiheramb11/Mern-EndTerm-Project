@@ -58,6 +58,12 @@ export const env = Object.freeze({
   // Razorpay (test or live keys). Without both, online payment endpoints answer 503.
   RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID,
   RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET,
+  // Google sign-in: the OAuth client id from Google Cloud Console. Without it, Google sign-in is off.
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+  // Razorpay webhook secret (Dashboard > Webhooks). Without it the webhook endpoint answers 503.
+  RAZORPAY_WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET,
+  // One-time sign-in codes are emailed; in production that needs a real mail server (SMTP_URL).
+  OTP_ENABLED: Boolean(process.env.SMTP_URL) || process.env.NODE_ENV !== 'production',
   ENABLE_CRON: process.env.ENABLE_CRON === 'true',
   isProd: process.env.NODE_ENV === 'production',
   isDev: (process.env.NODE_ENV ?? 'development') === 'development',
