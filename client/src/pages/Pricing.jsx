@@ -1,10 +1,11 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Glyph from '../components/site/Glyph.jsx';
 import Reveal from '../components/site/Reveal.jsx';
 import { SiteFooter, SiteHeader } from '../components/site/SiteChrome.jsx';
-import { formatINR } from '../lib/format.js';
 import { PRICING } from '../lib/pricing.js';
+
+// Whole rupees: a flat plan price never shows paise.
+const formatINR = (rupees) => `₹${rupees.toLocaleString('en-IN')}`;
 
 const INCLUDED = [
   'Rooms, beds, residents and stays',
@@ -20,34 +21,32 @@ const INCLUDED = [
 ];
 
 const FAQ = [
-  ['How is the price worked out?', 'You pay a flat rate for each bed you manage, every month. Every feature is included at every size.'],
-  ['Do students or staff cost extra?', 'No. Wardens, maintenance staff and students are free. You only count beds.'],
+  ['How does the free trial work?', `Try the complete software free for ${PRICING.trialDays} days. After that it is ${formatINR(PRICING.perMonthRupees)} per month.`],
+  ['What do I get for ₹159?', 'The complete software, with every feature listed above. There are no tiers and no features held back.'],
+  ['Do students or staff cost extra?', 'No. Wardens, maintenance staff and students use StayOS at no extra charge.'],
   ['Are there fees on online rent payments?', 'Online payments go through Razorpay, which charges its own fee on each payment under its published rates. StayOS does not add to it.'],
-  ['What counts as a bed?', 'Every active bed in your properties, whether it is occupied or empty.'],
+  ['Is the price per bed?', 'No. It is one flat price per month for the complete software.'],
 ];
 
 export default function Pricing() {
-  const [beds, setBeds] = useState(PRICING.defaultBeds);
-  const monthly = beds * PRICING.perBedPerMonthRupees;
-
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800">
       <SiteHeader />
       <main>
         <section className="mx-auto max-w-6xl px-4 pb-10 pt-14 text-center sm:px-6 sm:pt-20">
-          <Reveal as="h1" className="mx-auto max-w-3xl text-[2.4rem] font-semibold leading-[1.08] tracking-tight text-slate-900 sm:text-6xl">Simple pricing. One rate, every feature.</Reveal>
-          <Reveal as="p" delay={80} className="mx-auto mt-5 max-w-2xl text-lg text-slate-600 sm:text-xl">Pay per bed. No tiers to compare and no per-user fees.</Reveal>
+          <Reveal as="h1" className="mx-auto max-w-3xl text-[2.4rem] font-semibold leading-[1.08] tracking-tight text-slate-900 sm:text-6xl">One price. The complete software.</Reveal>
+          <Reveal as="p" delay={80} className="mx-auto mt-5 max-w-2xl text-lg text-slate-600 sm:text-xl">Try it free for {PRICING.trialDays} days. No tiers, no per-bed charges, no per-user fees.</Reveal>
         </section>
 
         <section className="mx-auto grid max-w-5xl gap-5 px-4 pb-16 sm:px-6 lg:grid-cols-5">
           <Reveal className="rounded-3xl border border-slate-200 bg-white p-7 shadow-card lg:col-span-3 sm:p-9">
             <p className="text-sm font-semibold text-accent-ink">StayOS</p>
             <p className="mt-3 flex items-baseline gap-2">
-              <span className="tnum text-5xl font-semibold tracking-tight text-slate-900 sm:text-6xl">{formatINR(PRICING.perBedPerMonthRupees)}</span>
-              <span className="text-slate-600">per bed, per month</span>
+              <span className="tnum text-5xl font-semibold tracking-tight text-slate-900 sm:text-6xl">{formatINR(PRICING.perMonthRupees)}</span>
+              <span className="text-slate-600">per month</span>
             </p>
-            <p className="mt-2 text-slate-600">Everything below is included from your first bed.</p>
-            <Link to="/register" className="mt-6 inline-flex min-h-[44px] items-center justify-center rounded-full bg-accent px-6 text-[15px] font-semibold text-onaccent hover:bg-accent-hover">Create your account</Link>
+            <p className="mt-2 text-slate-600">Free for the first {PRICING.trialDays} days, then {formatINR(PRICING.perMonthRupees)} a month. Everything below is included.</p>
+            <Link to="/register" className="mt-6 inline-flex min-h-[44px] items-center justify-center rounded-full bg-accent px-6 text-[15px] font-semibold text-onaccent hover:bg-accent-hover">Start your {PRICING.trialDays}-day free trial</Link>
             <ul className="mt-8 grid gap-3 border-t border-slate-200 pt-8 text-slate-700 sm:grid-cols-2">
               {INCLUDED.map((t) => (
                 <li key={t} className="flex items-start gap-2.5 text-sm"><Glyph name="check" className="mt-0.5 h-4 w-4 shrink-0 text-accent-ink" />{t}</li>
@@ -56,27 +55,20 @@ export default function Pricing() {
           </Reveal>
 
           <Reveal delay={100} className="rounded-3xl bg-white p-7 shadow-card sm:p-9 lg:col-span-2">
-            <h2 className="text-xl font-semibold tracking-tight text-slate-900">Estimate your month</h2>
-            <label htmlFor="beds" className="mt-6 flex items-baseline justify-between text-sm font-medium text-slate-700">
-              Beds in your property
-              <output htmlFor="beds" className="tnum text-2xl font-semibold text-slate-900">{beds}</output>
-            </label>
-            <input
-              id="beds"
-              type="range"
-              min={PRICING.minBeds}
-              max={PRICING.maxBeds}
-              step="5"
-              value={beds}
-              onChange={(e) => setBeds(Number(e.target.value))}
-              className="mt-3 w-full accent-[rgb(var(--accent))]"
-            />
-            <div className="mt-2 flex justify-between text-xs text-slate-500"><span>{PRICING.minBeds}</span><span>{PRICING.maxBeds}</span></div>
-            <div className="mt-6 rounded-2xl bg-slate-50 p-5">
-              <p className="text-sm text-slate-600">Estimated per month</p>
-              <p className="tnum mt-1 text-4xl font-semibold tracking-tight text-slate-900">{formatINR(monthly)}</p>
-              <p className="mt-1 text-xs text-slate-500">{beds} beds × {formatINR(PRICING.perBedPerMonthRupees)}. Payment gateway fees are separate.</p>
-            </div>
+            <h2 className="text-xl font-semibold tracking-tight text-slate-900">Good to know</h2>
+            <ul className="mt-5 space-y-4 text-sm text-slate-700">
+              {[
+                ['Free trial', `${PRICING.trialDays} days with the complete software.`],
+                ['Flat monthly price', `${formatINR(PRICING.perMonthRupees)} for the complete software.`],
+                ['Your team and students', 'Wardens, maintenance staff and students are not charged.'],
+                ['Online payments', 'Razorpay charges its own fee on each online payment. StayOS adds nothing.'],
+              ].map(([t, d]) => (
+                <li key={t} className="flex items-start gap-3">
+                  <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-accent text-onaccent"><Glyph name="check" className="h-3.5 w-3.5" /></span>
+                  <span><span className="block font-semibold text-slate-900">{t}</span>{d}</span>
+                </li>
+              ))}
+            </ul>
           </Reveal>
         </section>
 

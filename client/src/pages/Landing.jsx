@@ -275,7 +275,7 @@ export default function Landing() {
               <Link to="/login" className={`${button} border border-slate-300 bg-white text-slate-800 hover:bg-slate-100`}>Log in</Link>
             </div>
             <ul className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-slate-600">
-              {['Pay by UPI or card', 'Role-based access', 'Numbered receipts', 'Works on any phone'].map((t) => (
+              {['14-day free trial', 'Pay by UPI or card', 'Role-based access', 'Works on any phone'].map((t) => (
                 <li key={t} className="flex items-center gap-1.5"><Glyph name="check" className="h-4 w-4 text-accent-ink" />{t}</li>
               ))}
             </ul>
@@ -420,9 +420,9 @@ export default function Landing() {
         <section className="px-4 pb-16 sm:px-6 sm:pb-20">
           <div className="mx-auto max-w-6xl rounded-[2rem] bg-accent px-6 py-16 text-center sm:px-12 sm:py-20">
             <h2 className="mx-auto max-w-2xl text-3xl font-semibold tracking-tight text-onaccent sm:text-5xl">Your next rent day can be the easy one.</h2>
-            <p className="mx-auto mt-4 max-w-xl text-lg text-onaccent/90">Create your owner account, add a property and bring your first resident in today.</p>
+            <p className="mx-auto mt-4 max-w-xl text-lg text-onaccent/90">Try the complete software free for 14 days, then ₹159 a month. Add a property and bring your first resident in today.</p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <Link to="/register" className={`${button} bg-white text-accent-ink hover:opacity-90`}>Create your account</Link>
+              <Link to="/register" className={`${button} bg-white text-accent-ink hover:opacity-90`}>Start your 14-day free trial</Link>
               <Link to="/login" className={`${button} border border-white/60 text-onaccent hover:bg-white/10`}>Log in</Link>
             </div>
           </div>
