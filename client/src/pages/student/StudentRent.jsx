@@ -44,7 +44,7 @@ export default function StudentRent() {
         currency: order.currency,
         name: 'StayOS',
         description: order.description,
-        theme: { color: '#4f46e5' },
+        theme: { color: '#0f766e' },
         handler: async (response) => {
           try {
             await verifyRazorpayPayment(response);
@@ -99,7 +99,7 @@ export default function StudentRent() {
               Amount (₹)
               <input type="number" inputMode="decimal" min="1" max={payCharge.outstandingPaise / 100} step="0.01" required value={amount} onChange={(e) => setAmount(e.target.value)} className="mt-1 w-full border border-slate-300 px-3" />
             </label>
-            <button type="submit" className="w-full rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-700">Continue to payment</button>
+            <button type="submit" className="w-full rounded-lg bg-accent px-4 py-2 font-medium text-onaccent hover:bg-accent-hover">Continue to payment</button>
           </form>
         </Modal>
       )}

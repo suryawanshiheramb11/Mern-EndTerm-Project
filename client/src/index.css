@@ -5,8 +5,8 @@
 /*
   StayOS design tokens. Colours are space-separated RGB so Tailwind can apply opacity.
   Light and dark follow the system setting; there is no in-app appearance switch.
-  Contrast (WCAG, text on its surface): label 16.8:1, secondary 6.0:1, accent 6.9:1, signals 4.8-6.3:1 in light;
-  label 15.6:1, secondary 6.6:1, accent 6.7:1, signals 6.4-10.6:1 in dark.
+  Contrast (WCAG, text on its surface): label 16.8:1, secondary 6.0:1, accent 5.5:1, signals 4.8-6.3:1 in light;
+  label 15.6:1, secondary 6.6:1, accent 9.6:1, signals 6.4-10.6:1 in dark.
 */
 :root {
   color-scheme: light dark;
@@ -23,10 +23,10 @@
   --slate-800: 29 29 31; /* primary text */
   --slate-900: 17 17 19;
 
-  --accent: 79 70 200;
-  --accent-hover: 64 56 170;
-  --accent-ink: 79 70 200; /* accent used as text/links */
-  --accent-tint: 237 236 251;
+  --accent: 15 118 110;
+  --accent-hover: 11 94 88;
+  --accent-ink: 15 118 110; /* accent used as text/links */
+  --accent-tint: 224 244 241;
   --danger: 196 40 28;
 
   --red-50: 253 236 234; --red-300: 240 160 154; --red-600: 196 40 28; --red-700: 179 38 30;
@@ -35,7 +35,7 @@
   --green-50: 230 244 234; --green-700: 27 122 58; --green-800: 21 100 47; --green-900: 16 80 38;
   --emerald-50: 230 244 234; --emerald-300: 150 210 175; --emerald-500: 40 160 90; --emerald-700: 27 122 58; --emerald-800: 21 100 47;
   --blue-50: 232 241 251; --blue-200: 175 205 240; --blue-700: 11 92 173; --blue-900: 8 60 120;
-  --indigo-50: 237 236 251; --indigo-700: 79 70 200;
+  --indigo-50: 224 244 241; --indigo-700: 15 118 110; /* name kept for the 'assigned' badge; teal, not purple */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -52,10 +52,10 @@
     --slate-800: 245 245 247;
     --slate-900: 255 255 255;
 
-    --accent: 91 85 224;
-    --accent-hover: 108 102 235;
-    --accent-ink: 155 151 255;
-    --accent-tint: 37 35 77;
+    --accent: 15 118 110;
+    --accent-hover: 19 138 128;
+    --accent-ink: 94 214 196;
+    --accent-tint: 20 52 49;
     --danger: 217 58 47;
 
     --red-50: 58 21 18; --red-300: 120 50 45; --red-600: 255 138 128; --red-700: 255 138 128;
@@ -64,7 +64,7 @@
     --green-50: 16 48 27; --green-700: 76 210 122; --green-800: 100 220 140; --green-900: 130 230 165;
     --emerald-50: 16 48 27; --emerald-300: 40 100 65; --emerald-500: 76 210 122; --emerald-700: 76 210 122; --emerald-800: 100 220 140;
     --blue-50: 15 42 71; --blue-200: 40 80 130; --blue-700: 100 176 255; --blue-900: 150 200 255;
-    --indigo-50: 37 35 77; --indigo-700: 155 151 255;
+    --indigo-50: 20 52 49; --indigo-700: 94 214 196;
   }
 }
 
@@ -124,4 +124,12 @@
   body * { visibility: hidden; }
   #receipt-print, #receipt-print * { visibility: visible; }
   #receipt-print { position: absolute; left: 0; top: 0; width: 100%; }
+}
+
+/* Floating nav: blur is only for the functional layer; solid when the person asks for less transparency. */
+@media (prefers-reduced-transparency: reduce) {
+  .glass { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; background: rgb(var(--slate-50)) !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rise { animation: none !important; }
 }
