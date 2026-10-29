@@ -1,3 +1,6 @@
+
+https://youtu.be/JSkkit9kfGU
+
 # StayOS
 
 StayOS is a hostel/PG management SaaS. Property owners manage properties → rooms → beds → residents → stays → rent charges → payments → check-out and refunds → complaints → expenses → reports. Roles: **owner**, **warden**, **maintenance** (staff, with per-property permissions) and **student**. Every record is scoped to a property the caller can access, and students only ever see their own records.
